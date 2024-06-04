@@ -17,7 +17,7 @@ func main() {
 
 	// Routes
 	e.GET("/", hello)
-
+	e.GET("/customer/:id", getCustomer)
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
 }
@@ -25,4 +25,9 @@ func main() {
 // Handler
 func hello(c echo.Context) error {
 	return c.String(http.StatusOK, "Hello, World!")
+}
+
+func getCustomer(c echo.Context) error {
+	id := c.Param("id")
+	return c.String(http.StatusOK, id)
 }
