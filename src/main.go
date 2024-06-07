@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/overusevery/golang-echo-practice2/src/domain/usecase"
 	"github.com/overusevery/golang-echo-practice2/src/handler"
 )
 
@@ -19,7 +20,7 @@ func main() {
 	// Routes
 	e.GET("/", hello)
 
-	customerHandler := handler.CustomerHandler{}
+	customerHandler := handler.CustomerHandler{GetCustomerUseCase: usecase.GetCustomerUseCase{}}
 	e.GET("/customer/:id", customerHandler.GetCustomer)
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))

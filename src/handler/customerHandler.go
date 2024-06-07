@@ -9,6 +9,7 @@ import (
 )
 
 type CustomerHandler struct {
+	GetCustomerUseCase usecase.GetCustomerUseCase
 }
 
 func (h *CustomerHandler) GetCustomer(c echo.Context) error {
@@ -17,7 +18,7 @@ func (h *CustomerHandler) GetCustomer(c echo.Context) error {
 		return err
 	}
 
-	customer, err := usecase.GetCustomer(id)
+	customer, err := h.GetCustomerUseCase.Execute(id)
 	if err != nil {
 		return err
 	}
