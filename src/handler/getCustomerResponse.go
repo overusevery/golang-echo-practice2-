@@ -3,7 +3,7 @@ package handler
 import (
 	"time"
 
-	"github.com/overusevery/golang-echo-practice2/src/domain/model"
+	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 )
 
 type GetCustomerResponse struct {
@@ -17,7 +17,7 @@ type GetCustomerResponse struct {
 	Birthdate     time.Time `json:"birthdate"`
 }
 
-func ConvertFrom(customer model.Customer) GetCustomerResponse {
+func ConvertFrom(customer entity.Customer) GetCustomerResponse {
 	return GetCustomerResponse{
 		ID:            customer.ID,
 		Name:          customer.Name,
