@@ -18,7 +18,9 @@ func main() {
 
 	// Routes
 	e.GET("/", hello)
-	e.GET("/customer/:id", handler.GetCustomer)
+
+	customerHandler := handler.CustomerHandler{}
+	e.GET("/customer/:id", customerHandler.GetCustomer)
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
 }

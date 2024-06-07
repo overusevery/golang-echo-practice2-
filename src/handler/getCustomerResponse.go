@@ -17,7 +17,7 @@ type GetCustomerResponse struct {
 	Birthdate     time.Time `json:"birthdate"`
 }
 
-func ConvertFrom(customer entity.Customer) GetCustomerResponse {
+func convertFrom(customer entity.Customer) GetCustomerResponse {
 	return GetCustomerResponse{
 		ID:            customer.ID,
 		Name:          customer.Name,
