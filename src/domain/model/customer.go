@@ -3,12 +3,12 @@ package model
 import "time"
 
 type Customer struct {
-	ID            int       `json:"id"`
-	Name          string    `json:"name"`
-	Address       string    `json:"address"`
-	ZIP           string    `json:"zip"`
-	Phone         string    `json:"phone"`
-	MarketSegment string    `json:"mktsegment"`
-	Nation        string    `json:"nation"`
-	Birthdate     time.Time `json:"birthdate"`
+	ID            int
+	Name          string
+	Address       string
+	ZIP           string
+	Phone         string
+	MarketSegment string
+	Nation        string
+	Birthdate     time.Time
 }
