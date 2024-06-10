@@ -1,7 +1,9 @@
 package main
 
 import (
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -22,8 +24,16 @@ func main() {
 
 	customerHandler := handler.CustomerHandler{GetCustomerUseCase: usecase.GetCustomerUseCase{}}
 	e.GET("/customer/:id", customerHandler.GetCustomer)
+
 	// Start server
-	e.Logger.Fatal(e.Start(":1323"))
+	s := http.Server{
+		Addr:        ":1323",
+		Handler:     e,
+		ReadTimeout: 30 * time.Second,
+	}
+	if err := s.ListenAndServe(); err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
 }
 
 // Handler
