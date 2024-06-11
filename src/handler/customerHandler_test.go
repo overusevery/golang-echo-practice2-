@@ -15,14 +15,10 @@ func TestCustomerHandler_GetCustomer(t *testing.T) {
 		GetCustomerUseCase: usecase.GetCustomerUseCase{},
 	}
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	h.RegisterRouter(e)
+	req := httptest.NewRequest(http.MethodGet, "/customer/12", nil)
 	res := httptest.NewRecorder()
-	c := e.NewContext(req, res)
-	c.SetPath("/customer/:id")
-	c.SetParamNames("id")
-	c.SetParamValues("12")
-
-	h.GetCustomer(c)
+	e.ServeHTTP(res, req)
 	assertResponseBody(t, res.Body.String(), "{id:122}")
 	fmt.Println("res.Body.String()")
 	fmt.Println(res.Result().StatusCode)
