@@ -23,7 +23,8 @@ func main() {
 	e.GET("/", hello)
 
 	customerHandler := handler.CustomerHandler{GetCustomerUseCase: usecase.GetCustomerUseCase{}}
-	e.GET("/customer/:id", customerHandler.GetCustomer)
+	customerHandler.RegisterRouter(e)
+	//e.GET("/customer/:id", customerHandler.GetCustomer)
 
 	// Start server
 	s := http.Server{

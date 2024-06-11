@@ -12,6 +12,10 @@ type CustomerHandler struct {
 	GetCustomerUseCase usecase.GetCustomerUseCase
 }
 
+func (h *CustomerHandler) RegisterRouter(e *echo.Echo) {
+	e.GET("/customer/:id", h.GetCustomer)
+}
+
 func (h *CustomerHandler) GetCustomer(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
