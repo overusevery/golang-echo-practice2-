@@ -12,6 +12,10 @@ type CustomerHandler struct {
 	GetCustomerUseCase usecase.GetCustomerUseCase
 }
 
+func NewCustomrHandler() *CustomerHandler {
+	return &CustomerHandler{GetCustomerUseCase: usecase.GetCustomerUseCase{}}
+}
+
 func (h *CustomerHandler) RegisterRouter(e *echo.Echo) {
 	e.GET("/customer/:id", h.GetCustomer)
 }
