@@ -7,15 +7,12 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
-	"github.com/overusevery/golang-echo-practice2/src/domain/usecase"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCustomerHandler_GetCustomer(t *testing.T) {
-	h := &CustomerHandler{
-		GetCustomerUseCase: usecase.GetCustomerUseCase{},
-	}
 	e := echo.New()
+	h := NewCustomrHandler()
 	h.RegisterRouter(e)
 	req := httptest.NewRequest(http.MethodGet, "/customer/12", nil)
 	res := httptest.NewRecorder()
