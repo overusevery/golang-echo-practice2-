@@ -12,8 +12,8 @@ type CustomerHandler struct {
 	GetCustomerUseCase usecase.GetCustomerUseCase
 }
 
-func NewCustomrHandler() *CustomerHandler {
-	return &CustomerHandler{GetCustomerUseCase: usecase.GetCustomerUseCase{}}
+func NewCustomrHandler(getCustomerUseCase usecase.GetCustomerUseCase) *CustomerHandler {
+	return &CustomerHandler{getCustomerUseCase}
 }
 
 func (h *CustomerHandler) RegisterRouter(e *echo.Echo) {
