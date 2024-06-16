@@ -39,6 +39,20 @@ func (m *MockCustomerRepository) EXPECT() *MockCustomerRepositoryMockRecorder {
 	return m.recorder
 }
 
+// CreateCustomer mocks base method.
+func (m *MockCustomerRepository) CreateCustomer(customer entity.Customer) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateCustomer", customer)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateCustomer indicates an expected call of CreateCustomer.
+func (mr *MockCustomerRepositoryMockRecorder) CreateCustomer(customer any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCustomer", reflect.TypeOf((*MockCustomerRepository)(nil).CreateCustomer), customer)
+}
+
 // GetCustomer mocks base method.
 func (m *MockCustomerRepository) GetCustomer(id int) entity.Customer {
 	m.ctrl.T.Helper()
