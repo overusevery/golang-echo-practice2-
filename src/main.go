@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase"
 	"github.com/overusevery/golang-echo-practice2/src/handler"
+	"github.com/overusevery/golang-echo-practice2/src/repository"
 )
 
 func main() {
@@ -22,7 +23,8 @@ func main() {
 	// Routes
 	e.GET("/", hello)
 
-	customerHandler := handler.NewCustomrHandler(usecase.GetCustomerUseCase{})
+	r := repository.NewRealCustomerRepository()
+	customerHandler := handler.NewCustomrHandler(*usecase.NewGetCustomerUseCase(r))
 	customerHandler.RegisterRouter(e)
 
 	// Start server
