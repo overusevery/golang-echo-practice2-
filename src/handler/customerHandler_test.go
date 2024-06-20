@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -58,9 +59,14 @@ func TestCustomerHandler_CreateCustomer(t *testing.T) {
 		Nation:        "日本",
 		Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
 	})).Return(nil)
-	h := NewCustomrHandler(*usecase.NewGetCustomerUseCase(m))
+	h := NewCreateCustomerHandler(*usecase.NewCreateCustomerUseCase(m))
 	h.RegisterRouter(e)
-	req := httptest.NewRequest(http.MethodPost, "/customer", nil)
+	requestJson, err := os.ReadFile("../../fixture/customer.json")
+	if err != nil {
+		panic(err)
+	}
+	req := httptest.NewRequest(http.MethodPost, "/customer", bytes.NewReader(requestJson))
+	req.Header.Set("Content-Type", "application/json")
 	res := httptest.NewRecorder()
 	e.ServeHTTP(res, req)
 	expectedJson, err := os.ReadFile("../../fixture/create_customer_success.json")

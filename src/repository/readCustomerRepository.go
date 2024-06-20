@@ -50,3 +50,7 @@ func NewRealCustomerRepository() *RealCustomerRepository {
 func (r *RealCustomerRepository) GetCustomer(id int) entity.Customer {
 	return r.localData[id]
 }
+
+func (r *RealCustomerRepository) CreateCustomer(customer entity.Customer) error {
+	return nil
+}
