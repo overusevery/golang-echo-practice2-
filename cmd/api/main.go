@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/kelseyhightower/envconfig"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
@@ -16,7 +17,12 @@ import (
 )
 
 func main() {
-	connStr := "host=db user=postgres password=postgres dbname=postgres sslmode=disable"
+	var config Config
+	err := envconfig.Process("", &config)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=postgres sslmode=disable", config.Host, config.User, config.Password)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
@@ -42,12 +48,12 @@ func main() {
 	customerHandler.RegisterRouter(e)
 
 	// Start server
-	s := http.Server{
+	server := http.Server{
 		Addr:        ":1323",
 		Handler:     e,
 		ReadTimeout: 30 * time.Second,
 	}
-	if err := s.ListenAndServe(); err != http.ErrServerClosed {
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
 }
@@ -55,4 +61,10 @@ func main() {
 // Handler
 func hello(c echo.Context) error {
 	return c.String(http.StatusOK, "Hello, World!")
+}
+
+type Config struct {
+	Host     string
+	User     string
+	Password string
 }

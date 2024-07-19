@@ -3,6 +3,10 @@ services:
     build: .
     ports:
       - 1323:1323
+    environment:
+     - HOST=db
+     - USER=postgres
+     - PASSWORD=postgres
     depends_on:
       - db
     links:
