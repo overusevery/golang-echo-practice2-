@@ -1,4 +1,4 @@
-package usecase
+package customerusecase
 
 import (
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"

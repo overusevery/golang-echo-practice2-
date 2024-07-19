@@ -5,14 +5,14 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	"github.com/overusevery/golang-echo-practice2/src/domain/usecase"
+	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 )
 
 type CustomerHandler struct {
-	GetCustomerUseCase usecase.GetCustomerUseCase
+	GetCustomerUseCase customerusecase.GetCustomerUseCase
 }
 
-func NewCustomrHandler(getCustomerUseCase usecase.GetCustomerUseCase) *CustomerHandler {
+func NewCustomrHandler(getCustomerUseCase customerusecase.GetCustomerUseCase) *CustomerHandler {
 	return &CustomerHandler{getCustomerUseCase}
 }
 

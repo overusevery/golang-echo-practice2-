@@ -10,7 +10,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
-	"github.com/overusevery/golang-echo-practice2/src/domain/usecase"
+	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 	mock_repository "github.com/overusevery/golang-echo-practice2/src/repository/mock"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
@@ -31,12 +31,12 @@ func TestCustomerHandler_GetCustomer(t *testing.T) {
 		Nation:        "日本",
 		Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
 	})
-	h := NewCustomrHandler(*usecase.NewGetCustomerUseCase(m))
+	h := NewCustomrHandler(*customerusecase.NewGetCustomerUseCase(m))
 	h.RegisterRouter(e)
 	req := httptest.NewRequest(http.MethodGet, "/customer/1", nil)
 	res := httptest.NewRecorder()
 	e.ServeHTTP(res, req)
-	expectedJson, err := os.ReadFile("../../fixture/customer.json")
+	expectedJson, err := os.ReadFile("../../fixture/get_customer_response.json")
 	if err != nil {
 		panic(err)
 	}
@@ -59,9 +59,9 @@ func TestCustomerHandler_CreateCustomer(t *testing.T) {
 		Nation:        "日本",
 		Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
 	})).Return(nil)
-	h := NewCreateCustomerHandler(*usecase.NewCreateCustomerUseCase(m))
+	h := NewCreateCustomerHandler(*customerusecase.NewCreateCustomerUseCase(m))
 	h.RegisterRouter(e)
-	requestJson, err := os.ReadFile("../../fixture/customer.json")
+	requestJson, err := os.ReadFile("../../fixture/create_customer_request.json")
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +69,7 @@ func TestCustomerHandler_CreateCustomer(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	res := httptest.NewRecorder()
 	e.ServeHTTP(res, req)
-	expectedJson, err := os.ReadFile("../../fixture/create_customer_success.json")
+	expectedJson, err := os.ReadFile("../../fixture/create_customer_response.json")
 	if err != nil {
 		panic(err)
 	}
