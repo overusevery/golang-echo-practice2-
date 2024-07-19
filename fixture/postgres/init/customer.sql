@@ -9,3 +9,9 @@ CREATE TABLE customers (
   birthdate TIMESTAMP NOT NULL,
   PRIMARY KEY (id)
 );
+
+INSERT INTO customers (id, name, address, zip, phone, mktsegment, nation, birthdate)
+VALUES
+  (1, '山田 太郎', '東京都練馬区豊玉北2-13-1', '176-0013', '03-1234-5678', '個人', '日本', '1980-01-01 00:00:00'),
+  (2, '鈴木 花子', '神奈川県横浜市中区本牧3-10-1', '231-0012', '045-222-3333', '法人', '日本', '1985-04-05 13:50:00'),
+  (3, '佐藤 次郎', '大阪府大阪市北区梅田1-1-1', '530-0001', '06-6666-7777', '個人', '日本', '1990-07-20 22:10:00');
