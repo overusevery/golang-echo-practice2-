@@ -1,0 +1,11 @@
+CREATE TABLE customers (
+  id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  zip VARCHAR(10) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  mktsegment VARCHAR(20) NOT NULL,
+  nation VARCHAR(20) NOT NULL,
+  birthdate TIMESTAMP NOT NULL,
+  PRIMARY KEY (id)
+);
