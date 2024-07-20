@@ -1,54 +1,47 @@
 package repository
 
 import (
-	"time"
+	"context"
+	"database/sql"
+	"log"
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 )
 
 type RealCustomerRepository struct {
-	localData map[int]entity.Customer
+	db *sql.DB
 }
 
-func NewRealCustomerRepository() *RealCustomerRepository {
+func NewRealCustomerRepository(db *sql.DB) *RealCustomerRepository {
 	return &RealCustomerRepository{
-		localData: map[int]entity.Customer{
-			1: {
-				ID:            1,
-				Name:          "山田 太郎",
-				Address:       "東京都練馬区豊玉北2-13-1",
-				ZIP:           "176-0013",
-				Phone:         "03-1234-5678",
-				MarketSegment: "個人",
-				Nation:        "日本",
-				Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
-			},
-			2: {
-				ID:            2,
-				Name:          "佐藤 花子",
-				Address:       "神奈川県横浜市中区伊勢佐木町1-1-1",
-				ZIP:           "231-0021",
-				Phone:         "045-222-3333",
-				MarketSegment: "法人",
-				Nation:        "日本",
-				Birthdate:     time.Date(1990, 7, 10, 0, 0, 0, 0, time.UTC),
-			},
-			3: {
-				ID:            3,
-				Name:          "田中 麗子",
-				Address:       "大阪府大阪市北区梅田1-1-1",
-				ZIP:           "530-0001",
-				Phone:         "06-6666-7777",
-				MarketSegment: "個人",
-				Nation:        "日本",
-				Birthdate:     time.Date(2000, 4, 1, 0, 0, 0, 0, time.UTC),
-			},
-		},
+		db: db,
 	}
 }
 
-func (r *RealCustomerRepository) GetCustomer(id int) entity.Customer {
-	return r.localData[id]
+func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) entity.Customer {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, id)
+	customer := entity.Customer{}
+	err = row.Scan(&customer.ID,
+		&customer.Name,
+		&customer.Address,
+		&customer.ZIP,
+		&customer.Phone,
+		&customer.MarketSegment,
+		&customer.Nation,
+		&customer.Birthdate,
+	)
+	if err != nil {
+		_ = tx.Rollback()
+		log.Fatal(err)
+	}
+	if err := tx.Commit(); err != nil {
+		log.Fatal(err)
+	}
+	return customer
 }
 
 func (r *RealCustomerRepository) CreateCustomer(customer entity.Customer) error {

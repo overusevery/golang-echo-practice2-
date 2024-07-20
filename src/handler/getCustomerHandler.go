@@ -26,7 +26,7 @@ func (h *CustomerHandler) GetCustomer(c echo.Context) error {
 		return err
 	}
 
-	customer, err := h.GetCustomerUseCase.Execute(id)
+	customer, err := h.GetCustomerUseCase.Execute(c.Request().Context(), id)
 	if err != nil {
 		return err
 	}

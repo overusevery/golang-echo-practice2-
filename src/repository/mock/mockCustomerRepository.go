@@ -10,6 +10,7 @@
 package mock_repository
 
 import (
+	context "context"
 	reflect "reflect"
 
 	entity "github.com/overusevery/golang-echo-practice2/src/domain/entity"
@@ -54,15 +55,15 @@ func (mr *MockCustomerRepositoryMockRecorder) CreateCustomer(customer any) *gomo
 }
 
 // GetCustomer mocks base method.
-func (m *MockCustomerRepository) GetCustomer(id int) entity.Customer {
+func (m *MockCustomerRepository) GetCustomer(ctx context.Context, id int) entity.Customer {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCustomer", id)
+	ret := m.ctrl.Call(m, "GetCustomer", ctx, id)
 	ret0, _ := ret[0].(entity.Customer)
 	return ret0
 }
 
 // GetCustomer indicates an expected call of GetCustomer.
-func (mr *MockCustomerRepositoryMockRecorder) GetCustomer(id any) *gomock.Call {
+func (mr *MockCustomerRepositoryMockRecorder) GetCustomer(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCustomer", reflect.TypeOf((*MockCustomerRepository)(nil).GetCustomer), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCustomer", reflect.TypeOf((*MockCustomerRepository)(nil).GetCustomer), ctx, id)
 }

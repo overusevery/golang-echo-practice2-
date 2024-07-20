@@ -43,7 +43,7 @@ func main() {
 	// Routes
 	e.GET("/", hello)
 
-	r := repository.NewRealCustomerRepository()
+	r := repository.NewRealCustomerRepository(db)
 	customerHandler := handler.NewCustomrHandler(*customerusecase.NewGetCustomerUseCase(r))
 	customerHandler.RegisterRouter(e)
 
