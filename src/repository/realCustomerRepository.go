@@ -49,5 +49,27 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*enti
 }
 
 func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = tx.ExecContext(ctx,
+		`INSERT INTO customers (name, address, zip, phone, mktsegment, nation, birthdate)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		customer.Name,
+		customer.Address,
+		customer.ZIP,
+		customer.Phone,
+		customer.MarketSegment,
+		customer.Nation,
+		customer.Birthdate,
+	)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 	return nil
 }

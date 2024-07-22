@@ -1,5 +1,5 @@
 CREATE TABLE customers (
-  id INT NOT NULL,
+  id SERIAL,
   name VARCHAR(255) NOT NULL,
   address VARCHAR(255) NOT NULL,
   zip VARCHAR(10) NOT NULL,

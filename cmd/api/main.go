@@ -44,9 +44,11 @@ func main() {
 	e.GET("/", hello)
 
 	r := repository.NewRealCustomerRepository(db)
-	customerHandler := handler.NewCustomrHandler(*customerusecase.NewGetCustomerUseCase(r))
-	customerHandler.RegisterRouter(e)
+	getCustomerHandler := handler.NewCustomrHandler(*customerusecase.NewGetCustomerUseCase(r))
+	getCustomerHandler.RegisterRouter(e)
 
+	createCustomerHandler := handler.NewCreateCustomerHandler(*customerusecase.NewCreateCustomerUseCase(r))
+	createCustomerHandler.RegisterRouter(e)
 	// Start server
 	server := http.Server{
 		Addr:        ":1323",
