@@ -17,7 +17,7 @@ func NewGetCustomerUseCase(repository repository.CustomerRepository) *GetCustome
 	}
 }
 
-func (uc *GetCustomerUseCase) Execute(ctx context.Context, id int) (entity.Customer, error) {
-	res := uc.repository.GetCustomer(ctx, id)
-	return res, nil
+func (uc *GetCustomerUseCase) Execute(ctx context.Context, id int) (*entity.Customer, error) {
+	res, err := uc.repository.GetCustomer(ctx, id)
+	return res, err
 }

@@ -18,7 +18,7 @@ func NewRealCustomerRepository(db *sql.DB) *RealCustomerRepository {
 	}
 }
 
-func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) entity.Customer {
+func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*entity.Customer, error) {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -36,12 +36,12 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) entity
 	)
 	if err != nil {
 		_ = tx.Rollback()
-		log.Fatal(err)
+		return nil, err
 	}
 	if err := tx.Commit(); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	return customer
+	return &customer, nil
 }
 
 func (r *RealCustomerRepository) CreateCustomer(customer entity.Customer) error {

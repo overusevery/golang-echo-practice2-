@@ -31,6 +31,6 @@ func (h *CustomerHandler) GetCustomer(c echo.Context) error {
 		return err
 	}
 
-	res := convertFrom(customer)
+	res := convertFrom(*customer)
 	return c.JSON(http.StatusOK, res)
 }

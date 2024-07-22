@@ -55,11 +55,12 @@ func (mr *MockCustomerRepositoryMockRecorder) CreateCustomer(customer any) *gomo
 }
 
 // GetCustomer mocks base method.
-func (m *MockCustomerRepository) GetCustomer(ctx context.Context, id int) entity.Customer {
+func (m *MockCustomerRepository) GetCustomer(ctx context.Context, id int) (*entity.Customer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCustomer", ctx, id)
-	ret0, _ := ret[0].(entity.Customer)
-	return ret0
+	ret0, _ := ret[0].(*entity.Customer)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetCustomer indicates an expected call of GetCustomer.
