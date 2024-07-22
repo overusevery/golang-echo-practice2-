@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
+	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
 )
 
 type RealCustomerRepository struct {
@@ -34,6 +35,9 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*enti
 		&customer.Nation,
 		&customer.Birthdate,
 	)
+	if err == sql.ErrNoRows {
+		return nil, repository.ErrCustomerNotFound
+	}
 	if err != nil {
 		_ = tx.Rollback()
 		return nil, err
