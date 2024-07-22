@@ -65,7 +65,7 @@ func TestCustomerHandler_CreateCustomer(t *testing.T) {
 	ctrl := gomock.NewController(t) //t *testing.T)
 	defer ctrl.Finish()
 	m := mock_repository.NewMockCustomerRepository(ctrl)
-	m.EXPECT().CreateCustomer(gomock.Eq(entity.Customer{
+	m.EXPECT().CreateCustomer(context.Background(), gomock.Eq(entity.Customer{
 		ID:            1,
 		Name:          "山田 太郎",
 		Address:       "東京都練馬区豊玉北2-13-1",

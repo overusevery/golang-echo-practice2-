@@ -41,17 +41,17 @@ func (m *MockCustomerRepository) EXPECT() *MockCustomerRepositoryMockRecorder {
 }
 
 // CreateCustomer mocks base method.
-func (m *MockCustomerRepository) CreateCustomer(customer entity.Customer) error {
+func (m *MockCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateCustomer", customer)
+	ret := m.ctrl.Call(m, "CreateCustomer", ctx, customer)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // CreateCustomer indicates an expected call of CreateCustomer.
-func (mr *MockCustomerRepositoryMockRecorder) CreateCustomer(customer any) *gomock.Call {
+func (mr *MockCustomerRepositoryMockRecorder) CreateCustomer(ctx, customer any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCustomer", reflect.TypeOf((*MockCustomerRepository)(nil).CreateCustomer), customer)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCustomer", reflect.TypeOf((*MockCustomerRepository)(nil).CreateCustomer), ctx, customer)
 }
 
 // GetCustomer mocks base method.

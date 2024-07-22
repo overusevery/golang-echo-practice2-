@@ -25,7 +25,7 @@ func (h *CreateCustomerHandler) CreateCustomer(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, "bad request")
 	}
-	err = h.CreateCustomerUseCase.Execute(customer.ConvertFrom())
+	err = h.CreateCustomerUseCase.Execute(c.Request().Context(), customer.ConvertFrom())
 	if err != nil {
 		return err
 	}

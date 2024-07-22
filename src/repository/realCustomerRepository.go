@@ -48,6 +48,6 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*enti
 	return &customer, nil
 }
 
-func (r *RealCustomerRepository) CreateCustomer(customer entity.Customer) error {
+func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) error {
 	return nil
 }

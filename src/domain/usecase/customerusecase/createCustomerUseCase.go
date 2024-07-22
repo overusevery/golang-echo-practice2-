@@ -1,6 +1,8 @@
 package customerusecase
 
 import (
+	"context"
+
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
 )
@@ -15,7 +17,7 @@ func NewCreateCustomerUseCase(repository repository.CustomerRepository) *CreateC
 	}
 }
 
-func (uc *CreateCustomerUseCase) Execute(customer entity.Customer) error {
-	err := uc.repository.CreateCustomer(customer)
+func (uc *CreateCustomerUseCase) Execute(ctx context.Context, customer entity.Customer) error {
+	err := uc.repository.CreateCustomer(ctx, customer)
 	return err
 }
