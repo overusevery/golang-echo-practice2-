@@ -10,7 +10,7 @@ import (
 //go:generate mockgen -source=customerRepository.go -destination=../../repository/mock/mockCustomerRepository.go
 type CustomerRepository interface {
 	GetCustomer(ctx context.Context, id int) (*entity.Customer, error)
-	CreateCustomer(ctx context.Context, customer entity.Customer) error
+	CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error)
 }
 
 var (

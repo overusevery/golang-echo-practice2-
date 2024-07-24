@@ -17,7 +17,7 @@ func NewCreateCustomerUseCase(repository repository.CustomerRepository) *CreateC
 	}
 }
 
-func (uc *CreateCustomerUseCase) Execute(ctx context.Context, customer entity.Customer) error {
-	err := uc.repository.CreateCustomer(ctx, customer)
-	return err
+func (uc *CreateCustomerUseCase) Execute(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
+	createdCustomer, err := uc.repository.CreateCustomer(ctx, customer)
+	return createdCustomer, err
 }

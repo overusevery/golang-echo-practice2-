@@ -48,14 +48,15 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*enti
 	return &customer, nil
 }
 
-func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) error {
+func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = tx.ExecContext(ctx,
+	var id int
+	if err = tx.QueryRowContext(ctx,
 		`INSERT INTO customers (name, address, zip, phone, mktsegment, nation, birthdate)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id;`,
 		customer.Name,
 		customer.Address,
 		customer.ZIP,
@@ -63,13 +64,27 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 		customer.MarketSegment,
 		customer.Nation,
 		customer.Birthdate,
+	).Scan(&id); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+	row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, id)
+	createdCustomer := entity.Customer{}
+	err = row.Scan(&createdCustomer.ID,
+		&createdCustomer.Name,
+		&createdCustomer.Address,
+		&createdCustomer.ZIP,
+		&createdCustomer.Phone,
+		&createdCustomer.MarketSegment,
+		&createdCustomer.Nation,
+		&createdCustomer.Birthdate,
 	)
 	if err != nil {
 		_ = tx.Rollback()
-		return err
+		return nil, err
 	}
 	if err := tx.Commit(); err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &createdCustomer, nil
 }
