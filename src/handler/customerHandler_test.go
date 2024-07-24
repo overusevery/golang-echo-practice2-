@@ -74,7 +74,16 @@ func TestCustomerHandler_CreateCustomer(t *testing.T) {
 		MarketSegment: "個人",
 		Nation:        "日本",
 		Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
-	})).Return(nil)
+	})).Return(&entity.Customer{
+		ID:            1,
+		Name:          "山田 太郎",
+		Address:       "東京都練馬区豊玉北2-13-1",
+		ZIP:           "176-0013",
+		Phone:         "03-1234-5678",
+		MarketSegment: "個人",
+		Nation:        "日本",
+		Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+	}, nil)
 	h := NewCreateCustomerHandler(*customerusecase.NewCreateCustomerUseCase(m))
 	h.RegisterRouter(e)
 	requestJson, err := os.ReadFile("../../fixture/create_customer_request.json")
