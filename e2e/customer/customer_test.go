@@ -7,10 +7,9 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"regexp"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/overusevery/golang-echo-practice2/e2e/util"
 )
 
 func TestCustomerCreate(t *testing.T) {
@@ -44,21 +43,13 @@ func TestCustomerCreate(t *testing.T) {
 		panic(err)
 	}
 
-	expectedJson, err := os.ReadFile("../../fixture/create_customer_response.json")
+	expectedJson, err := os.ReadFile("../../fixture/create_customer_response.customassertion.json")
 	if err != nil {
 		panic(err)
 	}
-	compareJsonButSomeFileds(t, string(expectedJson), string(resGetJson))
+	util.CompareJsonWithCustomAssertionJson(t, string(expectedJson), string(resGetJson))
 }
 
 func TestCustomerGet(t *testing.T) {
 	TestCustomerCreate(t)
-}
-
-func compareJsonButSomeFileds(t assert.TestingT, expected string, actual string) bool {
-	re := regexp.MustCompile(`"id":\s*[0-9]+,`)
-	modifiedResponseBody := re.ReplaceAllString(actual, `"id": 1,`)
-
-	return assert.JSONEq(t, expected, modifiedResponseBody)
-
 }
