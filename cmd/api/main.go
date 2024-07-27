@@ -45,8 +45,6 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Routes
-	e.GET("/", hello)
-
 	r := repository.NewRealCustomerRepository(db)
 	getCustomerHandler := handler.NewCustomrHandler(*customerusecase.NewGetCustomerUseCase(r))
 	getCustomerHandler.RegisterRouter(e)
@@ -74,11 +72,6 @@ func main() {
 	if err := e.Shutdown(ctx); err != nil {
 		log.Fatal(err)
 	}
-}
-
-// Handler
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
 }
 
 type Config struct {
