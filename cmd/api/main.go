@@ -46,10 +46,10 @@ func main() {
 
 	// Routes
 	r := repository.NewRealCustomerRepository(db)
-	getCustomerHandler := handler.NewCustomrHandler(*customerusecase.NewGetCustomerUseCase(r))
+	getCustomerHandler := handler.NewCustomrHandler(customerusecase.NewGetCustomerUseCase(r))
 	getCustomerHandler.RegisterRouter(e)
 
-	createCustomerHandler := handler.NewCreateCustomerHandler(*customerusecase.NewCreateCustomerUseCase(r))
+	createCustomerHandler := handler.NewCreateCustomerHandler(customerusecase.NewCreateCustomerUseCase(r))
 	createCustomerHandler.RegisterRouter(e)
 	// Start server
 	server := http.Server{

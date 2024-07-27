@@ -33,7 +33,7 @@ func TestCustomerHandler_GetCustomer(t *testing.T) {
 		Nation:        "日本",
 		Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
 	}, nil)
-	h := NewCustomrHandler(*customerusecase.NewGetCustomerUseCase(m))
+	h := NewCustomrHandler(customerusecase.NewGetCustomerUseCase(m))
 	h.RegisterRouter(e)
 	req := httptest.NewRequest(http.MethodGet, "/customer/1", nil)
 	res := httptest.NewRecorder()
@@ -52,7 +52,7 @@ func TestCustomerHandler_GetCustomer_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 	m := mock_repository.NewMockCustomerRepository(ctrl)
 	m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(nil, repository.ErrCustomerNotFound)
-	h := NewCustomrHandler(*customerusecase.NewGetCustomerUseCase(m))
+	h := NewCustomrHandler(customerusecase.NewGetCustomerUseCase(m))
 	h.RegisterRouter(e)
 	req := httptest.NewRequest(http.MethodGet, "/customer/1", nil)
 	res := httptest.NewRecorder()
@@ -84,7 +84,7 @@ func TestCustomerHandler_CreateCustomer(t *testing.T) {
 		Nation:        "日本",
 		Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
 	}, nil)
-	h := NewCreateCustomerHandler(*customerusecase.NewCreateCustomerUseCase(m))
+	h := NewCreateCustomerHandler(customerusecase.NewCreateCustomerUseCase(m))
 	h.RegisterRouter(e)
 	requestJson, err := os.ReadFile("../../fixture/create_customer_request.json")
 	if err != nil {
