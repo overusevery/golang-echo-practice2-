@@ -18,7 +18,7 @@ type CustomerHandler struct {
 	GetCustomerUseCase GetCustomerUseCase
 }
 
-func NewCustomrHandler(getCustomerUseCase GetCustomerUseCase) *CustomerHandler {
+func NewGetCustomrHandler(getCustomerUseCase GetCustomerUseCase) *CustomerHandler {
 	return &CustomerHandler{getCustomerUseCase}
 }
 

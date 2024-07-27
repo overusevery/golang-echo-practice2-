@@ -46,7 +46,7 @@ func main() {
 
 	// Routes
 	r := repository.NewRealCustomerRepository(db)
-	getCustomerHandler := handler.NewCustomrHandler(customerusecase.NewGetCustomerUseCase(r))
+	getCustomerHandler := handler.NewGetCustomrHandler(customerusecase.NewGetCustomerUseCase(r))
 	getCustomerHandler.RegisterRouter(e)
 
 	createCustomerHandler := handler.NewCreateCustomerHandler(customerusecase.NewCreateCustomerUseCase(r))
