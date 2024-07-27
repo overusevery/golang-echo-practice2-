@@ -49,7 +49,3 @@ func TestCustomerCreate(t *testing.T) {
 	}
 	util.CompareJsonWithCustomAssertionJson(t, string(expectedJson), string(resGetJson))
 }
-
-func TestCustomerGet(t *testing.T) {
-	TestCustomerCreate(t)
-}
