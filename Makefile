@@ -15,3 +15,8 @@ unitcover:
 	cat _profile.cov | grep -v "src/repository" > profile.cov
 	go tool cover -func profile.cov
 	@rm _profile.cov profile.cov
+
+
+.PHONY:srcloc
+srcloc:
+	find ./src -name '*.go' | xargs wc -l
