@@ -147,3 +147,22 @@ func TestCustomerHandler_CreateCustomer_Bad_Request(t *testing.T) {
 	e.ServeHTTP(res, req)
 	assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
 }
+
+func TestCustomerHandler_CreateCustomer_When_Unexpected_Error_Happened_InternalServerError_Should_be_Returned(t *testing.T) {
+	e := echo.New()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	m := mock_repository.NewMockCustomerRepository(ctrl)
+	m.EXPECT().CreateCustomer(gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
+	h := NewCreateCustomerHandler(customerusecase.NewCreateCustomerUseCase(m))
+	h.RegisterRouter(e)
+	requestJson, err := os.ReadFile("../../fixture/create_customer_request.json")
+	if err != nil {
+		panic(err)
+	}
+	req := httptest.NewRequest(http.MethodPost, "/customer", bytes.NewReader(requestJson))
+	req.Header.Set("Content-Type", "application/json")
+	res := httptest.NewRecorder()
+	e.ServeHTTP(res, req)
+	assert.Equal(t, http.StatusInternalServerError, res.Result().StatusCode)
+}
