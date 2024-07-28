@@ -1,21 +1,17 @@
 package handler
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
+	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 )
 
-type CreateCustomerUseCase interface {
-	Execute(ctx context.Context, customer entity.Customer) (*entity.Customer, error)
-}
 type CreateCustomerHandler struct {
-	CreateCustomerUseCase CreateCustomerUseCase
+	CreateCustomerUseCase *customerusecase.CreateCustomerUseCase
 }
 
-func NewCreateCustomerHandler(createCustomerUseCase CreateCustomerUseCase) *CreateCustomerHandler {
+func NewCreateCustomerHandler(createCustomerUseCase *customerusecase.CreateCustomerUseCase) *CreateCustomerHandler {
 	return &CreateCustomerHandler{createCustomerUseCase}
 }
 
