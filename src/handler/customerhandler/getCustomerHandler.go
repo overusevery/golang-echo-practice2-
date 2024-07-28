@@ -1,4 +1,4 @@
-package handler
+package customerhandler
 
 import (
 	"fmt"

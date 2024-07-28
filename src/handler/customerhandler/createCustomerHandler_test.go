@@ -1,4 +1,4 @@
-package handler
+package customerhandler
 
 import (
 	"context"
@@ -40,16 +40,16 @@ func TestCreateCustomer(t *testing.T) {
 					Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 
-				res := testutil.Post(e, "/customer", "../../fixture/create_customer_request.json")
+				res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request.json")
 
-				testutil.AssertResBodyIsEquWithJson(t, res, "../../fixture/create_customer_response.json")
+				testutil.AssertResBodyIsEquWithJson(t, res, "../../../fixture/create_customer_response.json")
 			})
 	})
 	t.Run("bad request", func(t *testing.T) {
 		setupCreateCustomerHandlerWithMock(t,
 			func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 
-				res := testutil.Post(e, "/customer", "../../fixture/create_customer_request_invalid.json")
+				res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request_invalid.json")
 
 				assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
 			})
@@ -59,7 +59,7 @@ func TestCreateCustomer(t *testing.T) {
 			func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 				m.EXPECT().CreateCustomer(gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
 
-				res := testutil.Post(e, "/customer", "../../fixture/create_customer_request.json")
+				res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request.json")
 
 				assert.Equal(t, http.StatusInternalServerError, res.Result().StatusCode)
 			})

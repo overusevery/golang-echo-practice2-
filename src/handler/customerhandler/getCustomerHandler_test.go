@@ -1,4 +1,4 @@
-package handler
+package customerhandler
 
 import (
 	"context"
@@ -33,7 +33,7 @@ func TestGetCustomer(t *testing.T) {
 
 			res := testutil.GET(e, "/customer/1")
 
-			testutil.AssertResBodyIsEquWithJson(t, res, "../../fixture/get_customer_response.json")
+			testutil.AssertResBodyIsEquWithJson(t, res, "../../../fixture/get_customer_response.json")
 		})
 	})
 	t.Run("not found", func(t *testing.T) {

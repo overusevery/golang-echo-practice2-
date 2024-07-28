@@ -1,4 +1,4 @@
-package handler
+package customerhandler
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 )
 
-type GetCustomerResponse struct {
+type CreateCustomerRequest struct {
 	ID            int       `json:"id"`
 	Name          string    `json:"name"`
 	Address       string    `json:"address"`
@@ -17,15 +17,15 @@ type GetCustomerResponse struct {
 	Birthdate     time.Time `json:"birthdate"`
 }
 
-func convertFrom(customer entity.Customer) GetCustomerResponse {
-	return GetCustomerResponse{
-		ID:            customer.ID,
-		Name:          customer.Name,
-		Address:       customer.Address,
-		ZIP:           customer.ZIP,
-		Phone:         customer.Phone,
-		MarketSegment: customer.MarketSegment,
-		Nation:        customer.Nation,
-		Birthdate:     customer.Birthdate,
+func (r *CreateCustomerRequest) ConvertFrom() entity.Customer {
+	return entity.Customer{
+		ID:            r.ID,
+		Name:          r.Name,
+		Address:       r.Address,
+		ZIP:           r.ZIP,
+		Phone:         r.Phone,
+		MarketSegment: r.MarketSegment,
+		Nation:        r.Nation,
+		Birthdate:     r.Birthdate,
 	}
 }
