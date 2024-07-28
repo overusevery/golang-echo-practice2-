@@ -3,13 +3,10 @@ module github.com/overusevery/golang-echo-practice2
 go 1.19
 
 require (
+	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo/v4 v4.12.0
+	github.com/lib/pq v1.10.9
 	github.com/stretchr/testify v1.8.4
-)
-
-require (
-	github.com/kelseyhightower/envconfig v1.4.0 // indirect
-	github.com/lib/pq v1.10.9 // indirect
 )
 
 require (
