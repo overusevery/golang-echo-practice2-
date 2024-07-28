@@ -25,7 +25,7 @@ func (h *CustomerHandler) RegisterRouter(e *echo.Echo) {
 func (h *CustomerHandler) GetCustomer(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest)
 	}
 
 	customer, err := h.GetCustomerUseCase.Execute(c.Request().Context(), id)

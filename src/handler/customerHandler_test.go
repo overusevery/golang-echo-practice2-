@@ -65,16 +65,6 @@ func TestCustomerHandler_Invalid_Query_Should_Return_Bad_Request(t *testing.T) {
 	ctrl := gomock.NewController(t) //t *testing.T)
 	defer ctrl.Finish()
 	m := mock_repository.NewMockCustomerRepository(ctrl)
-	m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(&entity.Customer{
-		ID:            1,
-		Name:          "山田 太郎",
-		Address:       "東京都練馬区豊玉北2-13-1",
-		ZIP:           "176-0013",
-		Phone:         "03-1234-5678",
-		MarketSegment: "個人",
-		Nation:        "日本",
-		Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
-	}, nil)
 	h := NewGetCustomrHandler(customerusecase.NewGetCustomerUseCase(m))
 	h.RegisterRouter(e)
 	req := httptest.NewRequest(http.MethodGet, "/customer/not_number", nil)
