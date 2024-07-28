@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -58,6 +59,20 @@ func TestCustomerHandler_GetCustomer_NotFound(t *testing.T) {
 	res := httptest.NewRecorder()
 	e.ServeHTTP(res, req)
 	assert.Equal(t, http.StatusNotFound, res.Result().StatusCode)
+}
+
+func TestCustomerHandler_When_Unexpected_Error_Happened_InternalServerError_Should_be_Returned(t *testing.T) {
+	e := echo.New()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	m := mock_repository.NewMockCustomerRepository(ctrl)
+	m.EXPECT().GetCustomer(gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
+	h := NewGetCustomrHandler(customerusecase.NewGetCustomerUseCase(m))
+	h.RegisterRouter(e)
+	req := httptest.NewRequest(http.MethodGet, "/customer/1", nil)
+	res := httptest.NewRecorder()
+	e.ServeHTTP(res, req)
+	assert.Equal(t, http.StatusInternalServerError, res.Result().StatusCode)
 }
 
 func TestCustomerHandler_Invalid_Query_Should_Return_Bad_Request(t *testing.T) {
