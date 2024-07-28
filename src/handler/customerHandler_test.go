@@ -129,3 +129,21 @@ func TestCustomerHandler_CreateCustomer(t *testing.T) {
 
 	assert.JSONEq(t, string(expectedJson), res.Body.String())
 }
+
+func TestCustomerHandler_CreateCustomer_Bad_Request(t *testing.T) {
+	e := echo.New()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	m := mock_repository.NewMockCustomerRepository(ctrl)
+	h := NewCreateCustomerHandler(customerusecase.NewCreateCustomerUseCase(m))
+	h.RegisterRouter(e)
+	requestJson, err := os.ReadFile("../../fixture/create_customer_request_invalid.json")
+	if err != nil {
+		panic(err)
+	}
+	req := httptest.NewRequest(http.MethodPost, "/customer", bytes.NewReader(requestJson))
+	req.Header.Set("Content-Type", "application/json")
+	res := httptest.NewRecorder()
+	e.ServeHTTP(res, req)
+	assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
+}
