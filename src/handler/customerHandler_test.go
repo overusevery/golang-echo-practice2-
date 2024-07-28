@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"os"
 	"testing"
 	"time"
 
@@ -18,7 +17,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestCustomerHandler_GetCustomer(t *testing.T) {
+func Test_GetCustomer(t *testing.T) {
 	setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 		m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(&entity.Customer{
 			ID:            1,
@@ -33,16 +32,11 @@ func TestCustomerHandler_GetCustomer(t *testing.T) {
 
 		res := testutil.GET(e, "/customer/1")
 
-		expectedJson, err := os.ReadFile("../../fixture/get_customer_response.json")
-		if err != nil {
-			panic(err)
-		}
-
-		assert.JSONEq(t, string(expectedJson), res.Body.String())
+		testutil.AssertResBodyIsEquWithJson(t, res, "../../fixture/get_customer_response.json")
 	})
 }
 
-func TestCustomerHandler_GetCustomer_NotFound(t *testing.T) {
+func Test_GetCustomer_NotFound(t *testing.T) {
 	setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 		m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(nil, repository.ErrCustomerNotFound)
 
@@ -52,7 +46,7 @@ func TestCustomerHandler_GetCustomer_NotFound(t *testing.T) {
 	})
 }
 
-func TestCustomerHandler_When_Unexpected_Error_Happened_InternalServerError_Should_be_Returned(t *testing.T) {
+func Test_GetCustomer_InternalServerError(t *testing.T) {
 	setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 		m.EXPECT().GetCustomer(gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
 
@@ -62,7 +56,7 @@ func TestCustomerHandler_When_Unexpected_Error_Happened_InternalServerError_Shou
 	})
 }
 
-func TestCustomerHandler_Invalid_Query_Should_Return_Bad_Request(t *testing.T) {
+func Test_GetCustomer_BadRequest(t *testing.T) {
 	setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 
 		res := testutil.GET(e, "/customer/not_number")
@@ -71,7 +65,7 @@ func TestCustomerHandler_Invalid_Query_Should_Return_Bad_Request(t *testing.T) {
 	})
 }
 
-func TestCustomerHandler_CreateCustomer(t *testing.T) {
+func Test_CreateCustomer(t *testing.T) {
 	setupCreateCustomerHandlerWithMock(t,
 		func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 			m.EXPECT().CreateCustomer(context.Background(), gomock.Eq(entity.Customer{
@@ -96,27 +90,27 @@ func TestCustomerHandler_CreateCustomer(t *testing.T) {
 
 			res := testutil.Post(e, "/customer", "../../fixture/create_customer_request.json")
 
-			expectedJson, err := os.ReadFile("../../fixture/create_customer_response.json")
-			if err != nil {
-				panic(err)
-			}
-			assert.JSONEq(t, string(expectedJson), res.Body.String())
+			testutil.AssertResBodyIsEquWithJson(t, res, "../../fixture/create_customer_response.json")
 		})
 }
 
-func TestCustomerHandler_CreateCustomer_Bad_Request(t *testing.T) {
+func Test_CreateCustomer_Bad_Request(t *testing.T) {
 	setupCreateCustomerHandlerWithMock(t,
 		func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
+
 			res := testutil.Post(e, "/customer", "../../fixture/create_customer_request_invalid.json")
+
 			assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
 		})
 }
 
-func TestCustomerHandler_CreateCustomer_When_Unexpected_Error_Happened_InternalServerError_Should_be_Returned(t *testing.T) {
+func Test_CreateCustomer_InternalServerError(t *testing.T) {
 	setupCreateCustomerHandlerWithMock(t,
 		func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 			m.EXPECT().CreateCustomer(gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
+
 			res := testutil.Post(e, "/customer", "../../fixture/create_customer_request.json")
+
 			assert.Equal(t, http.StatusInternalServerError, res.Result().StatusCode)
 		})
 }
