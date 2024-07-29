@@ -1,0 +1,130 @@
+openapi: 3.0.0
+info:
+  title: Customer API
+  description: API for customer management
+  version: 1.0.0
+paths:
+  /customer/{id}:
+    get:
+      summary: Get customer by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /customer:
+    post:
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCustomer'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: 山田 太郎
+        address:
+          type: string
+          example: 東京都練馬区豊玉北2-13-1
+        zip:
+          type: string
+          example: 176-0013
+        phone:
+          type: string
+          example: 03-1234-5678
+        mktsegment:
+          type: string
+          example: 個人
+        nation:
+          type: string
+          example: 日本
+        birthdate:
+          type: string
+          format: date-time
+          example: 1980-01-01T00:00:00Z
+    NewCustomer:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 山田 太郎
+        address:
+          type: string
+          example: 東京都練馬区豊玉北2-13-1
+        zip:
+          type: string
+          example: 176-0013
+        phone:
+          type: string
+          example: 03-1234-5678
+        mktsegment:
+          type: string
+          example: 個人
+        nation:
+          type: string
+          example: 日本
+        birthdate:
+          type: string
+          format: date-time
+          example: 1980-01-01T00:00:00Z
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: some error message
