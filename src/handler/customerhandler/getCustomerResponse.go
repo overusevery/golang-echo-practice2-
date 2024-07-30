@@ -1,31 +1,21 @@
 package customerhandler
 
 import (
-	"time"
-
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
+	openapi "github.com/overusevery/golang-echo-practice2/src/handler/openapigenmodel/go"
 )
 
-type GetCustomerResponse struct {
-	ID            int       `json:"id"`
-	Name          string    `json:"name"`
-	Address       string    `json:"address"`
-	ZIP           string    `json:"zip"`
-	Phone         string    `json:"phone"`
-	MarketSegment string    `json:"mktsegment"`
-	Nation        string    `json:"nation"`
-	Birthdate     time.Time `json:"birthdate"`
-}
+type GetCustomerResponse openapi.Customer
 
 func convertFrom(customer entity.Customer) GetCustomerResponse {
 	return GetCustomerResponse{
-		ID:            customer.ID,
-		Name:          customer.Name,
-		Address:       customer.Address,
-		ZIP:           customer.ZIP,
-		Phone:         customer.Phone,
-		MarketSegment: customer.MarketSegment,
-		Nation:        customer.Nation,
-		Birthdate:     customer.Birthdate,
+		Id:         customer.ID,
+		Name:       customer.Name,
+		Address:    customer.Address,
+		Zip:        customer.ZIP,
+		Phone:      customer.Phone,
+		Mktsegment: customer.MarketSegment,
+		Nation:     customer.Nation,
+		Birthdate:  customer.Birthdate,
 	}
 }

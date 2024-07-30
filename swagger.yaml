@@ -128,3 +128,6 @@ components:
         message:
           type: string
           example: some error message
+servers:
+  - url: http://localhost:1323/
+    description: Localhost Server

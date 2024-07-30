@@ -21,7 +21,6 @@ func TestCreateCustomer(t *testing.T) {
 		setupCreateCustomerHandlerWithMock(t,
 			func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 				m.EXPECT().CreateCustomer(context.Background(), gomock.Eq(entity.Customer{
-					ID:            1,
 					Name:          "山田 太郎",
 					Address:       "東京都練馬区豊玉北2-13-1",
 					ZIP:           "176-0013",
