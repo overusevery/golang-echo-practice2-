@@ -20,12 +20,16 @@ func (h *CreateCustomerHandler) RegisterRouter(e *echo.Echo) {
 }
 
 func (h *CreateCustomerHandler) CreateCustomer(c echo.Context) error {
-	customer := CreateCustomerRequest{}
-	err := c.Bind(&customer)
+	req := CreateCustomerRequest{}
+	err := c.Bind(&req)
 	if err != nil {
 		return c.String(http.StatusBadRequest, "bad request")
 	}
-	createdCustomer, err := h.CreateCustomerUseCase.Execute(c.Request().Context(), customer.ConvertFrom())
+	customer, err := req.ConvertFrom()
+	if err != nil {
+		return c.String(http.StatusBadRequest, "bad request")
+	}
+	createdCustomer, err := h.CreateCustomerUseCase.Execute(c.Request().Context(), *customer)
 	if err != nil {
 		return err
 	}

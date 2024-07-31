@@ -7,8 +7,8 @@ import (
 
 type CreateCustomerRequest openapi.NewCustomer
 
-func (r *CreateCustomerRequest) ConvertFrom() entity.Customer {
-	c, _ := entity.NewCustomer(
+func (r *CreateCustomerRequest) ConvertFrom() (*entity.Customer, error) {
+	c, err := entity.NewCustomer(
 		0,
 		r.Name,
 		r.Address,
@@ -18,6 +18,8 @@ func (r *CreateCustomerRequest) ConvertFrom() entity.Customer {
 		r.Nation,
 		r.Birthdate,
 	)
-	//ToDo:Error handling
-	return *c
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }
