@@ -23,10 +23,10 @@ func TestNewBirthdate(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "success",
-			args:    args{in0: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local)},
-			want:    Birthdate(time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local)),
-			wantErr: false,
+			name:    "too old",
+			args:    args{in0: time.Date(20, 1, 1, 0, 0, 0, 0, time.Local)},
+			want:    Birthdate{},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
