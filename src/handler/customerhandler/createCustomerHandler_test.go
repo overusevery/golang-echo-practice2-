@@ -63,6 +63,22 @@ func TestCreateCustomer(t *testing.T) {
 				assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
 			})
 	})
+	t.Run("domain model validation error should return error id list", func(t *testing.T) {
+		t.Run("single error", func(t *testing.T) {
+			setupCreateCustomerHandlerWithMock(t,
+				func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
+
+					res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request_invalid_too_old_birthdate.json")
+
+					assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
+					testutil.AssertResBodyIsEquWithJson(t, res, "../../../fixture/create_customer_response_single_error_message.json")
+				})
+		})
+		t.Run("multiple error", func(t *testing.T) {
+			//ToDo:implement
+			t.Skip()
+		})
+	})
 	t.Run("internal server error", func(t *testing.T) {
 		setupCreateCustomerHandlerWithMock(t,
 			func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
