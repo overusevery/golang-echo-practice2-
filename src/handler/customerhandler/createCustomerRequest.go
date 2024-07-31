@@ -8,13 +8,16 @@ import (
 type CreateCustomerRequest openapi.NewCustomer
 
 func (r *CreateCustomerRequest) ConvertFrom() entity.Customer {
-	return entity.Customer{
-		Name:          r.Name,
-		Address:       r.Address,
-		ZIP:           r.Zip,
-		Phone:         r.Phone,
-		MarketSegment: r.Mktsegment,
-		Nation:        r.Nation,
-		Birthdate:     r.Birthdate,
-	}
+	c, _ := entity.NewCustomer(
+		0,
+		r.Name,
+		r.Address,
+		r.Zip,
+		r.Phone,
+		r.Mktsegment,
+		r.Nation,
+		r.Birthdate,
+	)
+	//ToDo:Error handling
+	return *c
 }

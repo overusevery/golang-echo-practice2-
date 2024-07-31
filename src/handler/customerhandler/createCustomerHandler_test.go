@@ -20,24 +20,25 @@ func TestCreateCustomer(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		setupCreateCustomerHandlerWithMock(t,
 			func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-				m.EXPECT().CreateCustomer(context.Background(), gomock.Eq(entity.Customer{
-					Name:          "山田 太郎",
-					Address:       "東京都練馬区豊玉北2-13-1",
-					ZIP:           "176-0013",
-					Phone:         "03-1234-5678",
-					MarketSegment: "個人",
-					Nation:        "日本",
-					Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
-				})).Return(&entity.Customer{
-					ID:            1,
-					Name:          "山田 太郎",
-					Address:       "東京都練馬区豊玉北2-13-1",
-					ZIP:           "176-0013",
-					Phone:         "03-1234-5678",
-					MarketSegment: "個人",
-					Nation:        "日本",
-					Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
-				}, nil)
+				m.EXPECT().CreateCustomer(context.Background(), gomock.Eq(*forceNewCustomer(
+					0,
+					"山田 太郎",
+					"東京都練馬区豊玉北2-13-1",
+					"176-0013",
+					"03-1234-5678",
+					"個人",
+					"日本",
+					time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+				))).Return(forceNewCustomer(
+					1,
+					"山田 太郎",
+					"東京都練馬区豊玉北2-13-1",
+					"176-0013",
+					"03-1234-5678",
+					"個人",
+					"日本",
+					time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+				), nil)
 
 				res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request.json")
 
@@ -74,4 +75,21 @@ func setupCreateCustomerHandlerWithMock(t *testing.T, testFun func(m *mock_repos
 	h.RegisterRouter(e)
 
 	testFun(m, e)
+}
+
+func forceNewCustomer(id int, name string, address string, zip string, phone string, marketSegment string, nation string, birthdate time.Time) *entity.Customer {
+	c, err := entity.NewCustomer(
+		id,
+		name,
+		address,
+		zip,
+		phone,
+		marketSegment,
+		nation,
+		birthdate,
+	)
+	if err != nil {
+		panic(err)
+	}
+	return c
 }

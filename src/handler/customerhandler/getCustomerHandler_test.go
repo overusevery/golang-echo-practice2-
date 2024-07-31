@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 	mock_repository "github.com/overusevery/golang-echo-practice2/src/repository/mock"
@@ -20,16 +19,16 @@ import (
 func TestGetCustomer(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-			m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(&entity.Customer{
-				ID:            1,
-				Name:          "山田 太郎",
-				Address:       "東京都練馬区豊玉北2-13-1",
-				ZIP:           "176-0013",
-				Phone:         "03-1234-5678",
-				MarketSegment: "個人",
-				Nation:        "日本",
-				Birthdate:     time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
-			}, nil)
+			m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(forceNewCustomer(
+				1,
+				"山田 太郎",
+				"東京都練馬区豊玉北2-13-1",
+				"176-0013",
+				"03-1234-5678",
+				"個人",
+				"日本",
+				time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+			), nil)
 
 			res := testutil.GET(e, "/customer/1")
 

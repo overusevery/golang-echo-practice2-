@@ -1,6 +1,8 @@
 package customerhandler
 
 import (
+	"time"
+
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	openapi "github.com/overusevery/golang-echo-practice2/src/handler/openapigenmodel/go"
 )
@@ -16,6 +18,6 @@ func convertFrom(customer entity.Customer) GetCustomerResponse {
 		Phone:      customer.Phone,
 		Mktsegment: customer.MarketSegment,
 		Nation:     customer.Nation,
-		Birthdate:  customer.Birthdate,
+		Birthdate:  time.Time(customer.Birthdate),
 	}
 }
