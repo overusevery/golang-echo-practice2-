@@ -81,6 +81,11 @@ func TestCreateCustomer(t *testing.T) {
 					inputJsonPath:    "../../../fixture/create_customer_request_invalid_future_birthdate.json",
 					expectedJsonPath: "../../../fixture/create_customer_response_single_error_message_ex_ERRID00002.json",
 				},
+				{
+					name:             "ERRID00003",
+					inputJsonPath:    "../../../fixture/create_customer_request_invalid_nation.json",
+					expectedJsonPath: "../../../fixture/create_customer_response_single_error_message_ex_ERRID00003.json",
+				},
 			}
 			for _, c := range testCases {
 				t.Run(c.name, func(t *testing.T) {
