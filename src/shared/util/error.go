@@ -15,6 +15,12 @@ func (e *ErrorList) Append(err error) ErrorList {
 	return ErrorList(errorList)
 }
 
+func (e *ErrorList) Concatenate(err *ErrorList) ErrorList {
+	errorList := []error(*e)
+	errorList = append(errorList, []error(*err)...)
+	return ErrorList(errorList)
+}
+
 func (e *ErrorList) Contains(err error) bool {
 	for _, v := range *e {
 		if v == err {

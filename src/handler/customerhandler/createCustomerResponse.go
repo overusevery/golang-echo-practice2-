@@ -17,7 +17,7 @@ func convertToCreateCustomerResponse(customer entity.Customer) CreateCustomerRes
 		Zip:        customer.ZIP,
 		Phone:      customer.Phone,
 		Mktsegment: customer.MarketSegment,
-		Nation:     customer.Nation,
+		Nation:     string(customer.Nation),
 		Birthdate:  time.Time(customer.Birthdate),
 	}
 }

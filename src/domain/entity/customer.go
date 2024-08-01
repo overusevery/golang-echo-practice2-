@@ -14,12 +14,14 @@ type Customer struct {
 	ZIP           string
 	Phone         string
 	MarketSegment string
-	Nation        string
+	Nation        value.Nation
 	Birthdate     value.Birthdate
 }
 
 func NewCustomer(id int, name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, util.ErrorList) {
 	b, errList := value.NewBirthdate(birthdate, time.Now())
+	n, errListNation := value.NewNation(nation)
+	errList = errList.Concatenate(&errListNation)
 	if errList != nil {
 		return nil, errList
 	}
@@ -30,7 +32,7 @@ func NewCustomer(id int, name, address, zip, phone, marketSegment, nation string
 		ZIP:           zip,
 		Phone:         phone,
 		MarketSegment: marketSegment,
-		Nation:        nation,
+		Nation:        n,
 		Birthdate:     b,
 	}, nil
 }
