@@ -1,8 +1,9 @@
 package customerhandler
 
 import (
-	"fmt"
+	"errors"
 
+	"github.com/overusevery/golang-echo-practice2/src/shared/message"
 	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 )
 
@@ -25,8 +26,12 @@ func convertToCreateCustomerErrorResponse(errList util.ErrorList) CreateCustomer
 				},
 			)
 		} else {
-			// Handle generic error
-			fmt.Println("Generic error:", err.Error())
+			messages = append(messages,
+				ErrorMsg{
+					ID:  message.ERRID00004.ErrorID(),
+					Msg: errors.Join(message.ERRID00004, err).Error(),
+				},
+			)
 		}
 
 	}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
+	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 )
 
 type CreateCustomerHandler struct {
@@ -23,7 +24,7 @@ func (h *CreateCustomerHandler) CreateCustomer(c echo.Context) error {
 	req := CreateCustomerRequest{}
 	err := c.Bind(&req)
 	if err != nil {
-		return c.String(http.StatusBadRequest, "bad request")
+		return c.JSON(http.StatusBadRequest, convertToCreateCustomerErrorResponse(util.NewErrorList(err)))
 	}
 	customer, errList := req.ConvertFrom()
 	if errList != nil {
