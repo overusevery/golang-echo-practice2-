@@ -104,7 +104,7 @@ func TestCreateCustomer(t *testing.T) {
 	t.Run("internal server error", func(t *testing.T) {
 		setupCreateCustomerHandlerWithMock(t,
 			func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-				m.EXPECT().CreateCustomer(gomock.Any(), gomock.Any()).Return(nil, util.ErrorList{errors.New("some error")})
+				m.EXPECT().CreateCustomer(gomock.Any(), gomock.Any()).Return(nil, util.NewErrorList(errors.New("some error")))
 
 				res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request.json")
 

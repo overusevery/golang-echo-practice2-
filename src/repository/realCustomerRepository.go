@@ -23,7 +23,7 @@ func NewRealCustomerRepository(db *sql.DB) *RealCustomerRepository {
 func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*entity.Customer, util.ErrorList) {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, util.ErrorList{err}
+		return nil, util.NewErrorList(err)
 	}
 	row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, id)
 	dbCustomer := DBCustomer{}
@@ -37,14 +37,14 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*enti
 		&dbCustomer.Birthdate,
 	)
 	if err == sql.ErrNoRows {
-		return nil, util.ErrorList{repository.ErrCustomerNotFound}
+		return nil, util.NewErrorList(repository.ErrCustomerNotFound)
 	}
 	if err != nil {
 		_ = tx.Rollback()
-		return nil, util.ErrorList{err}
+		return nil, util.NewErrorList(err)
 	}
 	if err := tx.Commit(); err != nil {
-		return nil, util.ErrorList{err}
+		return nil, util.NewErrorList(err)
 	}
 	entityCustomer, errList := dbCustomer.convertToEntity()
 	if errList != nil {
@@ -57,7 +57,7 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*enti
 func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, util.ErrorList) {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, util.ErrorList{err}
+		return nil, util.NewErrorList(err)
 	}
 	var id int
 	if err = tx.QueryRowContext(ctx,
@@ -72,7 +72,7 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 		time.Time(customer.Birthdate),
 	).Scan(&id); err != nil {
 		_ = tx.Rollback()
-		return nil, util.ErrorList{err}
+		return nil, util.NewErrorList(err)
 	}
 	row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, id)
 	dbCustomer := DBCustomer{}
@@ -87,10 +87,10 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 	)
 	if err != nil {
 		_ = tx.Rollback()
-		return nil, util.ErrorList{err}
+		return nil, util.NewErrorList(err)
 	}
 	if err := tx.Commit(); err != nil {
-		return nil, util.ErrorList{err}
+		return nil, util.NewErrorList(err)
 	}
 
 	entityCustomer, errList := dbCustomer.convertToEntity()

@@ -2,6 +2,13 @@ package util
 
 type ErrorList []error
 
+func NewErrorList(err ...error) ErrorList {
+	if len(err) == 0 {
+		return nil
+	}
+	return append(ErrorList{}, err...)
+}
+
 func (e *ErrorList) Append(err error) ErrorList {
 	errorList := []error(*e)
 	errorList = append(errorList, err)

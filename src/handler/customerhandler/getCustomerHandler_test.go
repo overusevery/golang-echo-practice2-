@@ -38,7 +38,7 @@ func TestGetCustomer(t *testing.T) {
 	})
 	t.Run("not found", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-			m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(nil, util.ErrorList{repository.ErrCustomerNotFound})
+			m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(nil, util.NewErrorList(repository.ErrCustomerNotFound))
 
 			res := testutil.GET(e, "/customer/1")
 
@@ -55,7 +55,7 @@ func TestGetCustomer(t *testing.T) {
 	})
 	t.Run("internal server error", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-			m.EXPECT().GetCustomer(gomock.Any(), gomock.Any()).Return(nil, util.ErrorList{errors.New("some error")})
+			m.EXPECT().GetCustomer(gomock.Any(), gomock.Any()).Return(nil, util.NewErrorList(errors.New("some error")))
 
 			res := testutil.GET(e, "/customer/1")
 
