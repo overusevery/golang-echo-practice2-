@@ -1,0 +1,6 @@
+{
+  "errors": [
+    { "id": "ERRID00002", "msg": "birthdate cannot be future" },
+    { "id": "ERRID00003", "msg": "unknown country value" }
+  ]
+}

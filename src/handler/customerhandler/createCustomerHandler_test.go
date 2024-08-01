@@ -102,8 +102,14 @@ func TestCreateCustomer(t *testing.T) {
 			}
 		})
 		t.Run("multiple error", func(t *testing.T) {
-			//ToDo:implement
-			t.Skip()
+			setupCreateCustomerHandlerWithMock(t,
+				func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
+
+					res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request_invalid_multiple_error.json")
+
+					assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
+					testutil.AssertResBodyIsEquWithJson(t, res, "../../../fixture/create_customer_response_multiple_error_message_ex_ERRID00002_3.json")
+				})
 		})
 	})
 	t.Run("internal server error", func(t *testing.T) {
