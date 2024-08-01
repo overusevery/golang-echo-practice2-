@@ -14,7 +14,14 @@ var (
 	ErrFutureDate = message.ERRID00002
 )
 
-func NewBirthdate(t time.Time, now time.Time) (Birthdate, util.ErrorList) {
+type NewBirthdateInput struct {
+	T   time.Time
+	Now time.Time
+}
+
+func NewBirthdate(i NewBirthdateInput) (Birthdate, util.ErrorList) {
+	t := i.T
+	now := i.Now
 	b := Birthdate(t)
 	validateionErrors := b.validate(now)
 	if validateionErrors != nil {
