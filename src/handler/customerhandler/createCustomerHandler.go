@@ -25,13 +25,13 @@ func (h *CreateCustomerHandler) CreateCustomer(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, "bad request")
 	}
-	customer, err := req.ConvertFrom()
-	if err != nil {
-		return c.String(http.StatusBadRequest, "bad request")
+	customer, errList := req.ConvertFrom()
+	if errList != nil {
+		return c.JSON(http.StatusBadRequest, convertToCreateCustomerErrorResponse(errList))
 	}
-	createdCustomer, err := h.CreateCustomerUseCase.Execute(c.Request().Context(), *customer)
-	if err != nil {
-		return err
+	createdCustomer, errList := h.CreateCustomerUseCase.Execute(c.Request().Context(), *customer)
+	if errList != nil {
+		return c.String(http.StatusInternalServerError, "bad request")
 	}
 
 	return c.JSON(http.StatusOK, convertToCreateCustomerResponse(*createdCustomer))

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/value"
+	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 )
 
 type Customer struct {
@@ -17,10 +18,10 @@ type Customer struct {
 	Birthdate     value.Birthdate
 }
 
-func NewCustomer(id int, name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, error) {
-	b, err := value.NewBirthdate(birthdate, time.Now())
-	if err != nil {
-		return nil, err
+func NewCustomer(id int, name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, util.ErrorList) {
+	b, errList := value.NewBirthdate(birthdate, time.Now())
+	if errList != nil {
+		return nil, errList
 	}
 	return &Customer{
 		ID:            id,

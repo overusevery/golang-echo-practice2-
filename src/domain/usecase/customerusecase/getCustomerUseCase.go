@@ -5,6 +5,7 @@ import (
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
+	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 )
 
 type GetCustomerUseCase struct {
@@ -17,7 +18,7 @@ func NewGetCustomerUseCase(repository repository.CustomerRepository) *GetCustome
 	}
 }
 
-func (uc *GetCustomerUseCase) Execute(ctx context.Context, id int) (*entity.Customer, error) {
+func (uc *GetCustomerUseCase) Execute(ctx context.Context, id int) (*entity.Customer, util.ErrorList) {
 	res, err := uc.repository.GetCustomer(ctx, id)
 	return res, err
 }

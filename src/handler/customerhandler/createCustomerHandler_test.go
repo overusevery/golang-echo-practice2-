@@ -11,6 +11,7 @@ import (
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 	mock_repository "github.com/overusevery/golang-echo-practice2/src/repository/mock"
+	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 	"github.com/overusevery/golang-echo-practice2/testutil"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
@@ -65,14 +66,35 @@ func TestCreateCustomer(t *testing.T) {
 	})
 	t.Run("domain model validation error should return error id list", func(t *testing.T) {
 		t.Run("single error", func(t *testing.T) {
-			setupCreateCustomerHandlerWithMock(t,
-				func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
+			testCases := []struct {
+				name             string
+				inputJsonPath    string
+				expectedJsonPath string
+			}{
+				{
+					name:             "ERRID00001",
+					inputJsonPath:    "../../../fixture/create_customer_request_invalid_too_old_birthdate.json",
+					expectedJsonPath: "../../../fixture/create_customer_response_single_error_message_ex_ERRID00001.json",
+				},
+				{
+					name:             "ERRID00002",
+					inputJsonPath:    "../../../fixture/create_customer_request_invalid_future_birthdate.json",
+					expectedJsonPath: "../../../fixture/create_customer_response_single_error_message_ex_ERRID00002.json",
+				},
+			}
+			for _, c := range testCases {
+				t.Run(c.name, func(t *testing.T) {
+					setupCreateCustomerHandlerWithMock(t,
+						func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 
-					res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request_invalid_too_old_birthdate.json")
+							res := testutil.Post(e, "/customer", c.inputJsonPath)
 
-					assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
-					testutil.AssertResBodyIsEquWithJson(t, res, "../../../fixture/create_customer_response_single_error_message.json")
+							assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
+							testutil.AssertResBodyIsEquWithJson(t, res, c.expectedJsonPath)
+						})
+
 				})
+			}
 		})
 		t.Run("multiple error", func(t *testing.T) {
 			//ToDo:implement
@@ -82,7 +104,7 @@ func TestCreateCustomer(t *testing.T) {
 	t.Run("internal server error", func(t *testing.T) {
 		setupCreateCustomerHandlerWithMock(t,
 			func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-				m.EXPECT().CreateCustomer(gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
+				m.EXPECT().CreateCustomer(gomock.Any(), gomock.Any()).Return(nil, util.ErrorList{errors.New("some error")})
 
 				res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request.json")
 

@@ -14,7 +14,7 @@ func TestErrorWithId_Error(t *testing.T) {
 		fields fields
 		want   string
 	}{
-		{name: "error sholud return id and msg", fields: fields{id: "ErrorID1", msg: "Some message"}, want: "ErrorID1:Some message"},
+		{name: "error sholud return id and msg", fields: fields{id: "ErrorID1", msg: "Some message"}, want: "Some message"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

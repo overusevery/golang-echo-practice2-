@@ -1,6 +1,21 @@
 package util
 
-import "fmt"
+type ErrorList []error
+
+func (e *ErrorList) Append(err error) ErrorList {
+	errorList := []error(*e)
+	errorList = append(errorList, err)
+	return ErrorList(errorList)
+}
+
+func (e *ErrorList) Contains(err error) bool {
+	for _, v := range *e {
+		if v == err {
+			return true
+		}
+	}
+	return false
+}
 
 type ErrorWithId struct {
 	id  string
@@ -15,10 +30,10 @@ func New(id string, msg string) *ErrorWithId {
 
 }
 
-func (e *ErrorWithId) Error() string {
-	return fmt.Sprintf("%s:%s", e.id, e.msg)
+func (e ErrorWithId) Error() string {
+	return e.msg
 }
 
-func (e *ErrorWithId) ErrorID() string {
+func (e ErrorWithId) ErrorID() string {
 	return e.id
 }

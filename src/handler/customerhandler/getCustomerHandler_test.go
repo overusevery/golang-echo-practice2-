@@ -11,6 +11,7 @@ import (
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 	mock_repository "github.com/overusevery/golang-echo-practice2/src/repository/mock"
+	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 	"github.com/overusevery/golang-echo-practice2/testutil"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
@@ -37,7 +38,7 @@ func TestGetCustomer(t *testing.T) {
 	})
 	t.Run("not found", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-			m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(nil, repository.ErrCustomerNotFound)
+			m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(nil, util.ErrorList{repository.ErrCustomerNotFound})
 
 			res := testutil.GET(e, "/customer/1")
 
@@ -54,7 +55,7 @@ func TestGetCustomer(t *testing.T) {
 	})
 	t.Run("internal server error", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-			m.EXPECT().GetCustomer(gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
+			m.EXPECT().GetCustomer(gomock.Any(), gomock.Any()).Return(nil, util.ErrorList{errors.New("some error")})
 
 			res := testutil.GET(e, "/customer/1")
 

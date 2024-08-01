@@ -1,18 +1,20 @@
 package value
 
 import (
-	"errors"
 	"time"
+
+	"github.com/overusevery/golang-echo-practice2/src/shared/message"
+	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 )
 
 type Birthdate time.Time
 
 var (
-	ErrTooOldDate = errors.New("Birthdate is too old")
-	ErrFutureDate = errors.New("Birthdate cannot be future")
+	ErrTooOldDate = message.ERRID00001
+	ErrFutureDate = message.ERRID00002
 )
 
-func NewBirthdate(t time.Time, now time.Time) (Birthdate, error) {
+func NewBirthdate(t time.Time, now time.Time) (Birthdate, util.ErrorList) {
 	b := Birthdate(t)
 	validateionErrors := b.validate(now)
 	if validateionErrors != nil {
@@ -21,13 +23,13 @@ func NewBirthdate(t time.Time, now time.Time) (Birthdate, error) {
 	return b, nil
 }
 
-func (b *Birthdate) validate(now time.Time) error {
-	var validateionErrors error
+func (b *Birthdate) validate(now time.Time) util.ErrorList {
+	var validateionErrors util.ErrorList
 	if time.Time(*b).Before(time.Date(1800, 1, 1, 0, 0, 0, 0, time.Local)) {
-		validateionErrors = errors.Join(validateionErrors, ErrTooOldDate)
+		validateionErrors = validateionErrors.Append(ErrTooOldDate)
 	}
 	if time.Time(*b).After(now) {
-		validateionErrors = errors.Join(validateionErrors, ErrTooOldDate)
+		validateionErrors = validateionErrors.Append(ErrFutureDate)
 	}
 	return validateionErrors
 

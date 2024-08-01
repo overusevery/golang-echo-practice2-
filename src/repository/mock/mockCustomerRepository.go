@@ -14,6 +14,7 @@ import (
 	reflect "reflect"
 
 	entity "github.com/overusevery/golang-echo-practice2/src/domain/entity"
+	util "github.com/overusevery/golang-echo-practice2/src/shared/util"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -41,11 +42,11 @@ func (m *MockCustomerRepository) EXPECT() *MockCustomerRepositoryMockRecorder {
 }
 
 // CreateCustomer mocks base method.
-func (m *MockCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
+func (m *MockCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, util.ErrorList) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateCustomer", ctx, customer)
 	ret0, _ := ret[0].(*entity.Customer)
-	ret1, _ := ret[1].(error)
+	ret1, _ := ret[1].(util.ErrorList)
 	return ret0, ret1
 }
 
@@ -56,11 +57,11 @@ func (mr *MockCustomerRepositoryMockRecorder) CreateCustomer(ctx, customer any) 
 }
 
 // GetCustomer mocks base method.
-func (m *MockCustomerRepository) GetCustomer(ctx context.Context, id int) (*entity.Customer, error) {
+func (m *MockCustomerRepository) GetCustomer(ctx context.Context, id int) (*entity.Customer, util.ErrorList) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCustomer", ctx, id)
 	ret0, _ := ret[0].(*entity.Customer)
-	ret1, _ := ret[1].(error)
+	ret1, _ := ret[1].(util.ErrorList)
 	return ret0, ret1
 }
 

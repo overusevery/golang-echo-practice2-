@@ -3,11 +3,11 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"log"
 	"time"
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
+	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 )
 
 type RealCustomerRepository struct {
@@ -20,10 +20,10 @@ func NewRealCustomerRepository(db *sql.DB) *RealCustomerRepository {
 	}
 }
 
-func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*entity.Customer, error) {
+func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*entity.Customer, util.ErrorList) {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
-		log.Fatal(err)
+		return nil, util.ErrorList{err}
 	}
 	row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, id)
 	dbCustomer := DBCustomer{}
@@ -37,27 +37,27 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*enti
 		&dbCustomer.Birthdate,
 	)
 	if err == sql.ErrNoRows {
-		return nil, repository.ErrCustomerNotFound
+		return nil, util.ErrorList{repository.ErrCustomerNotFound}
 	}
 	if err != nil {
 		_ = tx.Rollback()
-		return nil, err
+		return nil, util.ErrorList{err}
 	}
 	if err := tx.Commit(); err != nil {
-		return nil, err
+		return nil, util.ErrorList{err}
 	}
-	entityCustomer, err := dbCustomer.convertToEntity()
-	if err != nil {
-		return nil, err
+	entityCustomer, errList := dbCustomer.convertToEntity()
+	if errList != nil {
+		return nil, errList
 	}
 
 	return entityCustomer, nil
 }
 
-func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
+func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, util.ErrorList) {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
-		log.Fatal(err)
+		return nil, util.ErrorList{err}
 	}
 	var id int
 	if err = tx.QueryRowContext(ctx,
@@ -72,7 +72,7 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 		time.Time(customer.Birthdate),
 	).Scan(&id); err != nil {
 		_ = tx.Rollback()
-		return nil, err
+		return nil, util.ErrorList{err}
 	}
 	row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, id)
 	dbCustomer := DBCustomer{}
@@ -87,15 +87,15 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 	)
 	if err != nil {
 		_ = tx.Rollback()
-		return nil, err
+		return nil, util.ErrorList{err}
 	}
 	if err := tx.Commit(); err != nil {
-		return nil, err
+		return nil, util.ErrorList{err}
 	}
 
-	entityCustomer, err := dbCustomer.convertToEntity()
-	if err != nil {
-		return nil, err
+	entityCustomer, errList := dbCustomer.convertToEntity()
+	if errList != nil {
+		return nil, errList
 	}
 	return entityCustomer, nil
 }
@@ -111,7 +111,7 @@ type DBCustomer struct {
 	Birthdate     time.Time
 }
 
-func (d *DBCustomer) convertToEntity() (*entity.Customer, error) {
+func (d *DBCustomer) convertToEntity() (*entity.Customer, util.ErrorList) {
 	c, err := entity.NewCustomer(
 		d.ID,
 		d.Name,
