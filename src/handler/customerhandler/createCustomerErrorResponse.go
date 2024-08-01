@@ -18,8 +18,6 @@ func convertToCreateCustomerErrorResponse(errList util.ErrorList) CreateCustomer
 	messages := []ErrorMsg{}
 	for _, err := range errList {
 		if customErr, ok := err.(*util.ErrorWithId); ok {
-			// Handle MyCustomError specifically
-			fmt.Println("Custom error:", customErr.Error())
 			messages = append(messages,
 				ErrorMsg{
 					ID:  customErr.ErrorID(),
