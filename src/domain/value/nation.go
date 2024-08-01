@@ -22,6 +22,7 @@ func NewNation(s string) (Nation, util.ErrorList) {
 
 var NationsList = []string{
 	"JP",
+	"日本",
 }
 
 func (n *Nation) validate() util.ErrorList {
