@@ -53,6 +53,7 @@ func TestCreateCustomer(t *testing.T) {
 				res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request_invalid.json")
 
 				assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
+				testutil.AssertResBodyIsEquWithJson(t, res, "../../../fixture/create_customer_response_error_message_ex_ERRID00004.json")
 			})
 	})
 	t.Run("bad request(domain model validation)", func(t *testing.T) {
