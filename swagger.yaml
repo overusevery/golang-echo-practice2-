@@ -60,7 +60,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/MultipleErrorResponse'
         '500':
           description: Internal Server Error
           content:
@@ -128,6 +128,22 @@ components:
         message:
           type: string
           example: some error message
+    MultipleErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorElement'
+    ErrorElement:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ERRID00001"
+        msg:
+          type: string
+          example: "birthdate is too old"
 servers:
   - url: http://localhost:1323/
     description: Localhost Server

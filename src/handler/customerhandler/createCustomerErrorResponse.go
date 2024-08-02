@@ -3,32 +3,27 @@ package customerhandler
 import (
 	"errors"
 
+	openapi "github.com/overusevery/golang-echo-practice2/src/handler/openapigenmodel/go"
 	"github.com/overusevery/golang-echo-practice2/src/shared/message"
 	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 )
 
-type CreateCustomerErrorResponse struct {
-	ErrorMsgs []ErrorMsg `json:"errors"`
-}
-type ErrorMsg struct {
-	ID  string `json:"id"`
-	Msg string `json:"msg"`
-}
+type CreateCustomerErrorResponse openapi.MultipleErrorResponse
 
 func convertToCreateCustomerErrorResponse(errList util.ErrorList) CreateCustomerErrorResponse {
-	messages := []ErrorMsg{}
+	messages := []openapi.ErrorElement{}
 	for _, err := range errList {
 		if customErr, ok := err.(*util.ErrorWithId); ok {
 			messages = append(messages,
-				ErrorMsg{
-					ID:  customErr.ErrorID(),
+				openapi.ErrorElement{
+					Id:  customErr.ErrorID(),
 					Msg: customErr.Error(),
 				},
 			)
 		} else {
 			messages = append(messages,
-				ErrorMsg{
-					ID:  message.ERRID00004.ErrorID(),
+				openapi.ErrorElement{
+					Id:  message.ERRID00004.ErrorID(),
 					Msg: errors.Join(message.ERRID00004, err).Error(),
 				},
 			)
@@ -37,6 +32,6 @@ func convertToCreateCustomerErrorResponse(errList util.ErrorList) CreateCustomer
 	}
 
 	return CreateCustomerErrorResponse{
-		ErrorMsgs: messages,
+		Errors: messages,
 	}
 }
