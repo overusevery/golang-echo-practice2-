@@ -3,6 +3,7 @@ package entity
 import (
 	"time"
 
+	"github.com/overusevery/golang-echo-practice2/src/domain/entity/entityutil"
 	"github.com/overusevery/golang-echo-practice2/src/domain/value"
 	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 )
@@ -27,21 +28,11 @@ func NewCustomer(id int, name, address, zip, phone, marketSegment, nation string
 		ZIP:           zip,
 		Phone:         phone,
 		MarketSegment: marketSegment,
-		Birthdate:     WrapNew(value.NewBirthdate, &errList)(value.NewBirthdateInput{T: birthdate, Now: time.Now()}),
-		Nation:        WrapNew(value.NewNation, &errList)(nation),
+		Birthdate:     entityutil.WrapNew(value.NewBirthdate, &errList)(value.NewBirthdateInput{T: birthdate, Now: time.Now()}),
+		Nation:        entityutil.WrapNew(value.NewNation, &errList)(nation),
 	}
 	if errList != nil {
 		return nil, errList
 	}
 	return c, nil
-}
-
-type newEntitiyFun[I any, E any] func(input I) (E, util.ErrorList)
-
-func WrapNew[I any, E any](new newEntitiyFun[I, E], errorList *util.ErrorList) func(input I) E {
-	return func(input I) E {
-		entity, validationErrorList := new(input)
-		*errorList = errorList.Concatenate(&validationErrorList)
-		return entity
-	}
 }
