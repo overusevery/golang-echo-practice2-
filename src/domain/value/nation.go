@@ -2,7 +2,6 @@ package value
 
 import (
 	"github.com/overusevery/golang-echo-practice2/src/shared/message"
-	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 )
 
 type Nation string
@@ -11,7 +10,7 @@ var (
 	ErrUnknownCountyValue = message.ERRID00003
 )
 
-func NewNation(s string) (Nation, util.ErrorList) {
+func NewNation(s string) (Nation, error) {
 	n := Nation(s)
 	validateionErrors := n.validate()
 	if validateionErrors != nil {
@@ -25,11 +24,11 @@ var NationsList = []string{
 	"日本",
 }
 
-func (n *Nation) validate() util.ErrorList {
+func (n *Nation) validate() error {
 	for _, item := range NationsList {
 		if item == string(*n) {
 			return nil
 		}
 	}
-	return util.NewErrorList(ErrUnknownCountyValue)
+	return ErrUnknownCountyValue
 }

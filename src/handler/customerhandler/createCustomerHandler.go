@@ -24,7 +24,8 @@ func (h *CreateCustomerHandler) CreateCustomer(c echo.Context) error {
 	req := CreateCustomerRequest{}
 	err := c.Bind(&req)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, convertToCreateCustomerErrorResponse(util.NewErrorList(err)))
+		errorList := util.NewValidationErrorList(err)
+		return c.JSON(http.StatusBadRequest, convertToCreateCustomerErrorResponse(errorList))
 	}
 	customer, errList := req.ConvertFrom()
 	if errList != nil {

@@ -19,8 +19,8 @@ type Customer struct {
 	Birthdate     value.Birthdate
 }
 
-func NewCustomer(id int, name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, util.ErrorList) {
-	errList := util.NewErrorList()
+func NewCustomer(id int, name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, error) {
+	errList := []error{}
 	c := &Customer{
 		ID:            id,
 		Name:          name,
@@ -31,8 +31,8 @@ func NewCustomer(id int, name, address, zip, phone, marketSegment, nation string
 		Birthdate:     entityutil.WrapNew(value.NewBirthdate, &errList)(value.NewBirthdateInput{T: birthdate, Now: time.Now()}),
 		Nation:        entityutil.WrapNew(value.NewNation, &errList)(nation),
 	}
-	if errList != nil {
-		return nil, errList
+	if len(errList) > 0 {
+		return nil, util.NewValidationErrorList(errList...)
 	}
 	return c, nil
 }

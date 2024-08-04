@@ -3,6 +3,7 @@ package customerhandler
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -11,7 +12,6 @@ import (
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 	mock_repository "github.com/overusevery/golang-echo-practice2/src/repository/mock"
-	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 	"github.com/overusevery/golang-echo-practice2/testutil"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
@@ -116,7 +116,7 @@ func TestCreateCustomer(t *testing.T) {
 	t.Run("internal server error", func(t *testing.T) {
 		setupCreateCustomerHandlerWithMock(t,
 			func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-				m.EXPECT().CreateCustomer(gomock.Any(), gomock.Any()).Return(nil, util.NewErrorList(errors.New("some error")))
+				m.EXPECT().CreateCustomer(gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
 
 				res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request.json")
 
@@ -148,7 +148,7 @@ func forceNewCustomer(id int, name string, address string, zip string, phone str
 		birthdate,
 	)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("failed to create customer in test code:%w", err))
 	}
 	return c
 }

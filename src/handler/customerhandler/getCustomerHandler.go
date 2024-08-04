@@ -1,6 +1,7 @@
 package customerhandler
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -28,12 +29,14 @@ func (h *CustomerHandler) GetCustomer(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest)
 	}
 
-	customer, errList := h.GetCustomerUseCase.Execute(c.Request().Context(), id)
-	if errList.Contains(repository.ErrCustomerNotFound) {
-		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Customer (id = %v) is not found", id))
-	}
-	if errList != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError)
+	customer, err := h.GetCustomerUseCase.Execute(c.Request().Context(), id)
+	if err != nil {
+		switch {
+		case errors.Is(err, repository.ErrCustomerNotFound):
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Customer (id = %v) is not found", id))
+		default:
+			return echo.NewHTTPError(http.StatusInternalServerError)
+		}
 	}
 
 	res := convertFrom(*customer)

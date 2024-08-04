@@ -1,52 +1,55 @@
 package util
 
-type ErrorList []error
+import (
+	"errors"
+	"fmt"
 
-func NewErrorList(err ...error) ErrorList {
-	if len(err) == 0 {
-		return nil
+	"github.com/overusevery/golang-echo-practice2/src/shared/message"
+)
+
+var (
+	ErrValidation = message.ERRID00005
+)
+
+type ValidationErrorList struct {
+	mainErr     error
+	chilrenErrs []error
+}
+
+func NewValidationErrorList(err ...error) error {
+	list := flattenErrorIfValitionErrorList(err...)
+	vel := ValidationErrorList{
+		mainErr:     ErrValidation,
+		chilrenErrs: list,
 	}
-	return append(ErrorList{}, err...)
+	return &vel
 }
 
-func (e *ErrorList) Append(err error) ErrorList {
-	errorList := []error(*e)
-	errorList = append(errorList, err)
-	return ErrorList(errorList)
-}
-
-func (e *ErrorList) Concatenate(err *ErrorList) ErrorList {
-	errorList := []error(*e)
-	errorList = append(errorList, []error(*err)...)
-	return ErrorList(errorList)
-}
-
-func (e *ErrorList) Contains(err error) bool {
-	for _, v := range *e {
-		if v == err {
-			return true
+func flattenErrorIfValitionErrorList(err ...error) []error {
+	l := []error{}
+	for _, v := range err {
+		var innterErrorList *ValidationErrorList
+		if errors.As(v, &innterErrorList) {
+			l = append(l, innterErrorList.ChilrenErrrList()...)
+		} else {
+			l = append(l, v)
 		}
 	}
-	return false
-}
-
-type ErrorWithId struct {
-	id  string
-	msg string
-}
-
-func New(id string, msg string) *ErrorWithId {
-	return &ErrorWithId{
-		id:  id,
-		msg: msg,
-	}
+	return l
 
 }
 
-func (e ErrorWithId) Error() string {
-	return e.msg
+func (e ValidationErrorList) Error() string {
+	return fmt.Sprintf("validation error:%v", errors.Join(e.chilrenErrs...).Error())
+}
+func (e *ValidationErrorList) Unwrap() []error {
+	return []error{e.mainErr, errors.Join(e.chilrenErrs...)}
 }
 
-func (e ErrorWithId) ErrorID() string {
-	return e.id
+func (e *ValidationErrorList) IsNotEmpty() bool {
+	return len(e.chilrenErrs) != 0
+}
+
+func (e *ValidationErrorList) ChilrenErrrList() []error {
+	return e.chilrenErrs
 }

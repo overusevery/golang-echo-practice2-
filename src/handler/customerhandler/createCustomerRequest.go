@@ -3,12 +3,11 @@ package customerhandler
 import (
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	openapi "github.com/overusevery/golang-echo-practice2/src/handler/openapigenmodel/go"
-	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 )
 
 type CreateCustomerRequest openapi.NewCustomer
 
-func (r *CreateCustomerRequest) ConvertFrom() (*entity.Customer, util.ErrorList) {
+func (r *CreateCustomerRequest) ConvertFrom() (*entity.Customer, error) {
 	c, errList := entity.NewCustomer(
 		0,
 		r.Name,

@@ -19,7 +19,7 @@ type NewBirthdateInput struct {
 	Now time.Time
 }
 
-func NewBirthdate(i NewBirthdateInput) (Birthdate, util.ErrorList) {
+func NewBirthdate(i NewBirthdateInput) (Birthdate, error) {
 	t := i.T
 	now := i.Now
 	b := Birthdate(t)
@@ -30,14 +30,17 @@ func NewBirthdate(i NewBirthdateInput) (Birthdate, util.ErrorList) {
 	return b, nil
 }
 
-func (b *Birthdate) validate(now time.Time) util.ErrorList {
-	var validateionErrors util.ErrorList
+func (b *Birthdate) validate(now time.Time) error {
+	validateionErrors := []error{}
 	if time.Time(*b).Before(time.Date(1800, 1, 1, 0, 0, 0, 0, time.Local)) {
-		validateionErrors = validateionErrors.Append(ErrTooOldDate)
+		validateionErrors = append(validateionErrors, ErrTooOldDate)
 	}
 	if time.Time(*b).After(now) {
-		validateionErrors = validateionErrors.Append(ErrFutureDate)
+		validateionErrors = append(validateionErrors, ErrFutureDate)
 	}
-	return validateionErrors
 
+	if len(validateionErrors) > 0 {
+		return util.NewValidationErrorList(validateionErrors...)
+	}
+	return nil
 }

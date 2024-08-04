@@ -3,7 +3,6 @@ package value
 import (
 	"testing"
 
-	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,13 +14,13 @@ func TestNewNation(t *testing.T) {
 		name  string
 		args  args
 		want  Nation
-		want1 util.ErrorList
+		want1 error
 	}{
 		{
 			name:  "success",
 			args:  args{s: "JP"},
 			want:  Nation("JP"),
-			want1: util.NewErrorList(),
+			want1: nil,
 		},
 		{
 			name: "invalid small case",
@@ -29,7 +28,7 @@ func TestNewNation(t *testing.T) {
 				s: "Jp",
 			},
 			want:  Nation(""),
-			want1: util.NewErrorList(ErrUnknownCountyValue),
+			want1: ErrUnknownCountyValue,
 		},
 	}
 	for _, tt := range tests {
