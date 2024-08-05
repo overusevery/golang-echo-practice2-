@@ -8,8 +8,7 @@ import (
 type CreateCustomerRequest openapi.NewCustomer
 
 func (r *CreateCustomerRequest) ConvertFrom() (*entity.Customer, error) {
-	c, errList := entity.NewCustomer(
-		0,
+	c, errList := entity.NewCustomerNotRegistered(
 		r.Name,
 		r.Address,
 		r.Zip,

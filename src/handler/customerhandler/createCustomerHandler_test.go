@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"reflect"
 	"testing"
 	"time"
 
@@ -21,8 +22,8 @@ func TestCreateCustomer(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		setupCreateCustomerHandlerWithMock(t,
 			func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-				m.EXPECT().CreateCustomer(context.Background(), gomock.Eq(*forceNewCustomer(
-					0,
+				m.EXPECT().CreateCustomer(context.Background(), CustomerMatcherButID{expected: *forceNewCustomer(
+					"0",
 					"山田 太郎",
 					"東京都練馬区豊玉北2-13-1",
 					"176-0013",
@@ -30,8 +31,8 @@ func TestCreateCustomer(t *testing.T) {
 					"個人",
 					"日本",
 					time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
-				))).Return(forceNewCustomer(
-					1,
+				)}).Return(forceNewCustomer(
+					"1",
 					"山田 太郎",
 					"東京都練馬区豊玉北2-13-1",
 					"176-0013",
@@ -136,7 +137,7 @@ func setupCreateCustomerHandlerWithMock(t *testing.T, testFun func(m *mock_repos
 	testFun(m, e)
 }
 
-func forceNewCustomer(id int, name string, address string, zip string, phone string, marketSegment string, nation string, birthdate time.Time) *entity.Customer {
+func forceNewCustomer(id string, name string, address string, zip string, phone string, marketSegment string, nation string, birthdate time.Time) *entity.Customer {
 	c, err := entity.NewCustomer(
 		id,
 		name,
@@ -151,4 +152,21 @@ func forceNewCustomer(id int, name string, address string, zip string, phone str
 		panic(fmt.Errorf("failed to create customer in test code:%w", err))
 	}
 	return c
+}
+
+type CustomerMatcherButID struct {
+	expected entity.Customer
+}
+
+func (m CustomerMatcherButID) Matches(x interface{}) bool {
+	actual, ok := x.(entity.Customer)
+	if !ok {
+		return false
+	}
+	actual.ID = m.expected.ID
+	return reflect.DeepEqual(actual, m.expected)
+}
+
+func (m CustomerMatcherButID) String() string {
+	return "matches ignoring ID"
 }

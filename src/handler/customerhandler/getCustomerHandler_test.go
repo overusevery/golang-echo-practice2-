@@ -20,7 +20,7 @@ func TestGetCustomer(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 			m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(forceNewCustomer(
-				1,
+				"1",
 				"山田 太郎",
 				"東京都練馬区豊玉北2-13-1",
 				"176-0013",

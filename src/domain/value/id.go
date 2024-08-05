@@ -1,18 +1,13 @@
 package value
 
-type ID struct {
-	value        int
-	isDetermined bool
+import "github.com/google/uuid"
+
+type ID string
+
+func NewID(id string) ID {
+	return ID(id)
 }
 
-func NewID(id int) *ID {
-	return &ID{value: id, isDetermined: true}
-}
-
-func NewUndeteminedID() *ID {
-	return &ID{value: 0, isDetermined: false}
-}
-
-func (i *ID) GetValue() (int, bool) {
-	return i.value, i.isDetermined
+func GenerateNewIDString() string {
+	return uuid.NewString()
 }

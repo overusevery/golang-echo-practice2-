@@ -9,7 +9,7 @@ import (
 )
 
 type Customer struct {
-	ID            int
+	ID            value.ID
 	Name          string
 	Address       string
 	ZIP           string
@@ -19,10 +19,10 @@ type Customer struct {
 	Birthdate     value.Birthdate
 }
 
-func NewCustomer(id int, name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, error) {
+func NewCustomer(id string, name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, error) {
 	errList := []error{}
 	c := &Customer{
-		ID:            id,
+		ID:            value.NewID(id),
 		Name:          name,
 		Address:       address,
 		ZIP:           zip,
@@ -35,4 +35,9 @@ func NewCustomer(id int, name, address, zip, phone, marketSegment, nation string
 		return nil, util.NewValidationErrorList(errList...)
 	}
 	return c, nil
+}
+
+func NewCustomerNotRegistered(name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, error) {
+	c, err := NewCustomer(value.GenerateNewIDString(), name, address, zip, phone, marketSegment, nation, birthdate)
+	return c, err
 }

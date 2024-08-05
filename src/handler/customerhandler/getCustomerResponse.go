@@ -11,7 +11,7 @@ type GetCustomerResponse openapi.Customer
 
 func convertFrom(customer entity.Customer) GetCustomerResponse {
 	return GetCustomerResponse{
-		Id:         customer.ID,
+		Id:         string(customer.ID),
 		Name:       customer.Name,
 		Address:    customer.Address,
 		Zip:        customer.ZIP,

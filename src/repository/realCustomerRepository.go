@@ -100,7 +100,7 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 }
 
 type DBCustomer struct {
-	ID            int
+	ID            string
 	Name          string
 	Address       string
 	ZIP           string

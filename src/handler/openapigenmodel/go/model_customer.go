@@ -19,7 +19,7 @@ import (
 
 type Customer struct {
 
-	Id int `json:"id,omitempty"`
+	Id string `json:"id,omitempty"`
 
 	Name string `json:"name,omitempty"`
 
