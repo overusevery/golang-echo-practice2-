@@ -2,7 +2,6 @@ package util
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/overusevery/golang-echo-practice2/src/shared/message"
 )
@@ -40,14 +39,10 @@ func flattenErrorIfValitionErrorList(err ...error) []error {
 }
 
 func (e ValidationErrorList) Error() string {
-	return fmt.Sprintf("validation error:%v", errors.Join(e.chilrenErrs...).Error())
+	return errors.Join(e.Unwrap()...).Error()
 }
 func (e *ValidationErrorList) Unwrap() []error {
 	return []error{e.mainErr, errors.Join(e.chilrenErrs...)}
-}
-
-func (e *ValidationErrorList) IsNotEmpty() bool {
-	return len(e.chilrenErrs) != 0
 }
 
 func (e *ValidationErrorList) ChilrenErrrList() []error {
