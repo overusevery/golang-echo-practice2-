@@ -14,7 +14,7 @@ func convertToCreateCustomerErrorResponse(err error) CreateCustomerErrorResponse
 	messages := []openapi.ErrorElement{}
 	var errList *util.ValidationErrorList
 	if errors.As(err, &errList) {
-		for _, err := range errList.ChilrenErrrList() {
+		for _, err := range errList.Unwrap() {
 			if customErr, ok := err.(*message.ErrorWithId); ok {
 				messages = append(messages,
 					openapi.ErrorElement{

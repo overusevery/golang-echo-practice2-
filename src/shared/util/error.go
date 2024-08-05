@@ -2,24 +2,19 @@ package util
 
 import (
 	"errors"
-
-	"github.com/overusevery/golang-echo-practice2/src/shared/message"
-)
-
-var (
-	ErrValidation = message.ERRID00005
 )
 
 type ValidationErrorList struct {
-	mainErr     error
-	chilrenErrs []error
+	errors []error
 }
 
 func NewValidationErrorList(err ...error) error {
+	if err == nil { // if no err
+		return nil
+	}
 	list := flattenErrorIfValitionErrorList(err...)
 	vel := ValidationErrorList{
-		mainErr:     ErrValidation,
-		chilrenErrs: list,
+		errors: list,
 	}
 	return &vel
 }
@@ -29,7 +24,7 @@ func flattenErrorIfValitionErrorList(err ...error) []error {
 	for _, v := range err {
 		var innterErrorList *ValidationErrorList
 		if errors.As(v, &innterErrorList) {
-			l = append(l, innterErrorList.ChilrenErrrList()...)
+			l = append(l, innterErrorList.Unwrap()...)
 		} else {
 			l = append(l, v)
 		}
@@ -42,9 +37,5 @@ func (e ValidationErrorList) Error() string {
 	return errors.Join(e.Unwrap()...).Error()
 }
 func (e *ValidationErrorList) Unwrap() []error {
-	return []error{e.mainErr, errors.Join(e.chilrenErrs...)}
-}
-
-func (e *ValidationErrorList) ChilrenErrrList() []error {
-	return e.chilrenErrs
+	return e.errors
 }
