@@ -1,6 +1,7 @@
 package customerhandler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -27,13 +28,23 @@ func (h *CreateCustomerHandler) CreateCustomer(c echo.Context) error {
 		errorList := util.NewValidationErrorList(err)
 		return c.JSON(http.StatusBadRequest, convertToCreateCustomerErrorResponse(errorList))
 	}
-	customer, errList := req.ConvertFrom()
-	if errList != nil {
-		return c.JSON(http.StatusBadRequest, convertToCreateCustomerErrorResponse(errList))
-	}
-	createdCustomer, errList := h.CreateCustomerUseCase.Execute(c.Request().Context(), *customer)
-	if errList != nil {
-		return c.String(http.StatusInternalServerError, "bad request")
+
+	createdCustomer, err := h.CreateCustomerUseCase.Execute(c.Request().Context(), customerusecase.CreateCustomerUseCaseInput{
+		Name:          req.Name,
+		Address:       req.Address,
+		ZIP:           req.Zip,
+		Phone:         req.Phone,
+		MarketSegment: req.Mktsegment,
+		Nation:        req.Nation,
+		Birthdate:     req.Birthdate,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, customerusecase.ErrInvalidInputCreateCustomerUseCase):
+			return c.JSON(http.StatusBadRequest, convertToCreateCustomerErrorResponse(err))
+		default:
+			return c.String(http.StatusInternalServerError, "bad request")
+		}
 	}
 
 	return c.JSON(http.StatusOK, convertToCreateCustomerResponse(*createdCustomer))
