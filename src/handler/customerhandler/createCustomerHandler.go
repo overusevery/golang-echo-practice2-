@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
+	"golang.org/x/exp/slog"
 )
 
 type CreateCustomerHandler struct {
@@ -41,7 +42,10 @@ func (h *CreateCustomerHandler) CreateCustomer(c echo.Context) error {
 		case errors.Is(err, customerusecase.ErrInvalidInputCreateCustomerUseCase):
 			return c.JSON(http.StatusBadRequest, convertToCreateCustomerErrorResponse(err))
 		default:
-			return c.String(http.StatusInternalServerError, "bad request")
+			slog.Error("CreateCustomer get unexpected error", "detail", err)
+			return c.JSON(http.StatusInternalServerError, CreateCustomerErrorResponse{
+				Message: "failed to create customer",
+			})
 		}
 	}
 

@@ -8,9 +8,10 @@ import (
 	"github.com/overusevery/golang-echo-practice2/src/shared/util"
 )
 
-type CreateCustomerErrorResponse openapi.MultipleErrorResponse
+type CreateCustomerErrorResponse openapi.Error
+type CreateCustomerMultiErrorResponse openapi.MultipleErrorResponse
 
-func convertToCreateCustomerErrorResponse(err error) CreateCustomerErrorResponse {
+func convertToCreateCustomerErrorResponse(err error) CreateCustomerMultiErrorResponse {
 	messages := []openapi.ErrorElement{}
 	var errList *util.ValidationErrorList
 	if errors.As(err, &errList) {
@@ -33,7 +34,7 @@ func convertToCreateCustomerErrorResponse(err error) CreateCustomerErrorResponse
 		}
 	}
 
-	return CreateCustomerErrorResponse{
+	return CreateCustomerMultiErrorResponse{
 		Errors: messages,
 	}
 }
