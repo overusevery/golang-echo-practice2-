@@ -20,37 +20,34 @@ func NewRealCustomerRepository(db *sql.DB) *RealCustomerRepository {
 }
 
 func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*entity.Customer, error) {
-	tx, err := r.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, id)
-	dbCustomer := DBCustomer{}
-	err = row.Scan(&dbCustomer.ID,
-		&dbCustomer.Name,
-		&dbCustomer.Address,
-		&dbCustomer.ZIP,
-		&dbCustomer.Phone,
-		&dbCustomer.MarketSegment,
-		&dbCustomer.Nation,
-		&dbCustomer.Birthdate,
-	)
-	if err == sql.ErrNoRows {
-		return nil, repository.ErrCustomerNotFound
-	}
-	if err != nil {
-		_ = tx.Rollback()
-		return nil, err
-	}
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-	entityCustomer, errList := dbCustomer.convertToEntity()
-	if errList != nil {
-		return nil, errList
-	}
-
-	return entityCustomer, nil
+	var entityCustomer *entity.Customer
+	errTranscation := RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
+		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, id)
+		dbCustomer := DBCustomer{}
+		err := row.Scan(&dbCustomer.ID,
+			&dbCustomer.Name,
+			&dbCustomer.Address,
+			&dbCustomer.ZIP,
+			&dbCustomer.Phone,
+			&dbCustomer.MarketSegment,
+			&dbCustomer.Nation,
+			&dbCustomer.Birthdate,
+		)
+		if err != nil {
+			switch {
+			case err == sql.ErrNoRows:
+				return repository.ErrCustomerNotFound
+			default:
+				return err
+			}
+		}
+		entityCustomer, err = dbCustomer.convertToEntity()
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return entityCustomer, errTranscation
 }
 
 func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
