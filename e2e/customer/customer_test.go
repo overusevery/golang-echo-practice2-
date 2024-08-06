@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/overusevery/golang-echo-practice2/e2e/util"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCustomerCreate(t *testing.T) {
@@ -23,7 +24,13 @@ func TestCustomerCreate(t *testing.T) {
 	}
 	defer resCreate.Body.Close()
 
-	body, _ := io.ReadAll(resCreate.Body)
+	if !assert.Equal(t, http.StatusOK, resCreate.StatusCode) {
+		return
+	}
+	body, err := io.ReadAll(resCreate.Body)
+	if err != nil {
+		panic(err)
+	}
 
 	var resCreateJson map[string]interface{}
 
@@ -38,6 +45,9 @@ func TestCustomerCreate(t *testing.T) {
 	}
 	defer resGet.Body.Close()
 
+	if assert.Equal(t, http.StatusOK, resGet.StatusCode) {
+		return
+	}
 	resGetJson, err := io.ReadAll(resGet.Body)
 	if err != nil {
 		panic(err)
