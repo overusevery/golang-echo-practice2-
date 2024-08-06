@@ -51,49 +51,46 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id string) (*e
 }
 
 func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
-	tx, err := r.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	_, err = tx.ExecContext(ctx,
-		`INSERT INTO customers (id, name, address, zip, phone, mktsegment, nation, birthdate)
+	var entityCustomer *entity.Customer
+	errRun := RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
+		_, err := tx.ExecContext(ctx,
+			`INSERT INTO customers (id, name, address, zip, phone, mktsegment, nation, birthdate)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-		customer.ID,
-		customer.Name,
-		customer.Address,
-		customer.ZIP,
-		customer.Phone,
-		customer.MarketSegment,
-		customer.Nation,
-		time.Time(customer.Birthdate),
-	)
-	if err != nil {
-		return nil, err
-	}
-	row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, customer.ID)
-	dbCustomer := DBCustomer{}
-	err = row.Scan(&dbCustomer.ID,
-		&dbCustomer.Name,
-		&dbCustomer.Address,
-		&dbCustomer.ZIP,
-		&dbCustomer.Phone,
-		&dbCustomer.MarketSegment,
-		&dbCustomer.Nation,
-		&dbCustomer.Birthdate,
-	)
-	if err != nil {
-		_ = tx.Rollback()
-		return nil, err
-	}
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
+			customer.ID,
+			customer.Name,
+			customer.Address,
+			customer.ZIP,
+			customer.Phone,
+			customer.MarketSegment,
+			customer.Nation,
+			time.Time(customer.Birthdate),
+		)
+		if err != nil {
+			return err
+		}
 
-	entityCustomer, errList := dbCustomer.convertToEntity()
-	if errList != nil {
-		return nil, errList
-	}
-	return entityCustomer, nil
+		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, customer.ID)
+		dbCustomer := DBCustomer{}
+		err = row.Scan(&dbCustomer.ID,
+			&dbCustomer.Name,
+			&dbCustomer.Address,
+			&dbCustomer.ZIP,
+			&dbCustomer.Phone,
+			&dbCustomer.MarketSegment,
+			&dbCustomer.Nation,
+			&dbCustomer.Birthdate,
+		)
+		if err != nil {
+			return err
+		}
+
+		entityCustomer, err = dbCustomer.convertToEntity()
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return entityCustomer, errRun
 }
 
 type DBCustomer struct {
