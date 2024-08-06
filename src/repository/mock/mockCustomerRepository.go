@@ -56,7 +56,7 @@ func (mr *MockCustomerRepositoryMockRecorder) CreateCustomer(ctx, customer any) 
 }
 
 // GetCustomer mocks base method.
-func (m *MockCustomerRepository) GetCustomer(ctx context.Context, id int) (*entity.Customer, error) {
+func (m *MockCustomerRepository) GetCustomer(ctx context.Context, id string) (*entity.Customer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCustomer", ctx, id)
 	ret0, _ := ret[0].(*entity.Customer)

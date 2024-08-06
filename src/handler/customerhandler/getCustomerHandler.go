@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
@@ -25,10 +24,7 @@ func (h *CustomerHandler) RegisterRouter(e *echo.Echo) {
 }
 
 func (h *CustomerHandler) GetCustomer(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, convertToGetCustomerMultiResponse(err))
-	}
+	id := c.Param("id")
 
 	customer, err := h.GetCustomerUseCase.Execute(c.Request().Context(), id)
 	if err != nil {

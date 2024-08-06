@@ -19,7 +19,7 @@ func NewRealCustomerRepository(db *sql.DB) *RealCustomerRepository {
 	}
 }
 
-func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id int) (*entity.Customer, error) {
+func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id string) (*entity.Customer, error) {
 	var entityCustomer *entity.Customer
 	errTranscation := RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
 		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, id)
@@ -55,10 +55,10 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 	if err != nil {
 		return nil, err
 	}
-	var id int
-	if err = tx.QueryRowContext(ctx,
-		`INSERT INTO customers (name, address, zip, phone, mktsegment, nation, birthdate)
-        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id;`,
+	_, err = tx.ExecContext(ctx,
+		`INSERT INTO customers (id, name, address, zip, phone, mktsegment, nation, birthdate)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+		customer.ID,
 		customer.Name,
 		customer.Address,
 		customer.ZIP,
@@ -66,11 +66,11 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 		customer.MarketSegment,
 		customer.Nation,
 		time.Time(customer.Birthdate),
-	).Scan(&id); err != nil {
-		_ = tx.Rollback()
+	)
+	if err != nil {
 		return nil, err
 	}
-	row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, id)
+	row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, customer.ID)
 	dbCustomer := DBCustomer{}
 	err = row.Scan(&dbCustomer.ID,
 		&dbCustomer.Name,

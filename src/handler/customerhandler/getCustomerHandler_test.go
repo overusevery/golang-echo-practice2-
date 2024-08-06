@@ -19,7 +19,7 @@ import (
 func TestGetCustomer(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-			m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(forceNewCustomer(
+			m.EXPECT().GetCustomer(context.Background(), gomock.Eq("1")).Return(forceNewCustomer(
 				"1",
 				"山田 太郎",
 				"東京都練馬区豊玉北2-13-1",
@@ -37,7 +37,7 @@ func TestGetCustomer(t *testing.T) {
 	})
 	t.Run("not found", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-			m.EXPECT().GetCustomer(context.Background(), gomock.Eq(1)).Return(nil, repository.ErrCustomerNotFound)
+			m.EXPECT().GetCustomer(context.Background(), gomock.Eq("1")).Return(nil, repository.ErrCustomerNotFound)
 
 			res := testutil.GET(e, "/customer/1")
 
@@ -45,12 +45,13 @@ func TestGetCustomer(t *testing.T) {
 		})
 	})
 	t.Run("bad request", func(t *testing.T) {
-		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
+		t.Skip() //no such case at now
+		// setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 
-			res := testutil.GET(e, "/customer/not_number")
+		// 	res := testutil.GET(e, "/customer/not_number")
 
-			assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
-		})
+		// 	assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
+		// })
 	})
 	t.Run("internal server error", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
