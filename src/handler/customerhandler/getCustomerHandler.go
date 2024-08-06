@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
+	"golang.org/x/exp/slog"
 )
 
 type CustomerHandler struct {
@@ -26,16 +27,21 @@ func (h *CustomerHandler) RegisterRouter(e *echo.Echo) {
 func (h *CustomerHandler) GetCustomer(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest)
+		return c.JSON(http.StatusBadRequest, convertToGetCustomerMultiResponse(err))
 	}
 
 	customer, err := h.GetCustomerUseCase.Execute(c.Request().Context(), id)
 	if err != nil {
 		switch {
 		case errors.Is(err, repository.ErrCustomerNotFound):
-			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Customer (id = %v) is not found", id))
+			return c.JSON(http.StatusNotFound, GetCustomerErrorResponse{
+				Message: fmt.Sprintf("Customer (id = %v) is not found", id),
+			})
 		default:
-			return echo.NewHTTPError(http.StatusInternalServerError)
+			slog.Error("GetCustomer get unexpected error", "detail", err)
+			return c.JSON(http.StatusInternalServerError, CreateCustomerErrorResponse{
+				Message: "failed to get customer",
+			})
 		}
 	}
 
