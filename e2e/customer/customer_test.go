@@ -11,51 +11,45 @@ import (
 
 	"github.com/overusevery/golang-echo-practice2/e2e/util"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCustomerCreate(t *testing.T) {
-	request, err := os.ReadFile("../../fixture/create_customer_request.json")
-	if err != nil {
-		panic(err)
-	}
-	resCreate, err := http.Post("http://localhost:1323/customer", "application/json", bytes.NewBuffer(request))
-	if err != nil {
-		panic(err)
-	}
-	defer resCreate.Body.Close()
+	resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/create_customer_request.json", http.StatusOK)
+	resGetJson := get(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), http.StatusOK)
+	util.CompareJsonWithCustomAssertionJson(t, "../../fixture/create_customer_response.customassertion.json", resGetJson)
+}
 
-	if !assert.Equal(t, http.StatusOK, resCreate.StatusCode) {
-		return
-	}
-	body, err := io.ReadAll(resCreate.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	var resCreateJson map[string]interface{}
-
-	if err := json.Unmarshal(body, &resCreateJson); err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	resGet, err := http.Get(fmt.Sprintf("http://localhost:1323/customer/%v", resCreateJson["id"]))
-	if err != nil {
-		panic(err)
-	}
+func get(t *testing.T, url string, expectedStatus int) string {
+	resGet, err := http.Get(url)
+	require.NoError(t, err)
 	defer resGet.Body.Close()
 
-	if assert.Equal(t, http.StatusOK, resGet.StatusCode) {
-		return
-	}
+	assert.Equal(t, expectedStatus, resGet.StatusCode)
 	resGetJson, err := io.ReadAll(resGet.Body)
-	if err != nil {
-		panic(err)
-	}
+	require.NoError(t, err)
+	return string(resGetJson)
+}
 
-	expectedJson, err := os.ReadFile("../../fixture/create_customer_response.customassertion.json")
-	if err != nil {
-		panic(err)
-	}
-	util.CompareJsonWithCustomAssertionJson(t, string(expectedJson), string(resGetJson))
+func post(t *testing.T, url string, jsonPath string, expectedStatus int) string {
+	request, err := os.ReadFile(jsonPath)
+	require.NoError(t, err)
+
+	resCreate, err := http.Post(url, "application/json", bytes.NewBuffer(request))
+	require.NoError(t, err)
+	defer resCreate.Body.Close()
+
+	assert.Equal(t, expectedStatus, resCreate.StatusCode)
+
+	body, err := io.ReadAll(resCreate.Body)
+	require.NoError(t, err)
+
+	return string(body)
+}
+
+func getFieldInJsonString(t *testing.T, jsonString string, field string) string {
+	var jsonMap map[string]interface{}
+	err := json.Unmarshal([]byte(jsonString), &jsonMap)
+	require.NoError(t, err)
+	return jsonMap[field].(string)
 }

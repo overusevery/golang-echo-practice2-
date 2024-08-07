@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
@@ -35,7 +36,7 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id string) (*e
 		)
 		if err != nil {
 			switch {
-			case err == sql.ErrNoRows:
+			case errors.Is(err, sql.ErrNoRows):
 				return repository.ErrCustomerNotFound
 			default:
 				return err
