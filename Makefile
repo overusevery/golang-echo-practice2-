@@ -11,10 +11,14 @@ view-e2e-coverage:
 
 .PHONY:unitcover
 unitcover:
-	go test ./src/... -cover -coverprofile=_profile.cov
-	cat _profile.cov | grep -v "src/repository" | grep -v "src/handler/openapigenmodel" > profile.cov
+	go test -v ./src/... -coverpkg=./... -cover -coverprofile=_profile.cov
+	cat _profile.cov | grep -v "src/repository" | grep -v "src/handler/openapigenmodel" | grep -v "testutil" > profile.cov
 	go tool cover -func profile.cov
-	@rm _profile.cov profile.cov
+	@rm _profile.cov
+
+.PHONY:clean
+cleasn:
+	rm profile.cov
 
 
 .PHONY:srcloc
