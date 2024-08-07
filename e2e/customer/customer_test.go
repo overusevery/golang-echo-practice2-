@@ -15,9 +15,19 @@ import (
 )
 
 func TestCustomerCreate(t *testing.T) {
-	resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/create_customer_request.json", http.StatusOK)
-	resGetJson := get(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), http.StatusOK)
-	util.CompareJsonWithCustomAssertionJson(t, "../../fixture/create_customer_response.customassertion.json", resGetJson)
+	t.Run("standard", func(t *testing.T) {
+		resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/create_customer_request.json", http.StatusOK)
+		resGetJson := get(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), http.StatusOK)
+		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/create_customer_response.customassertion.json", resGetJson)
+	})
+}
+
+func TestGetCustomer(t *testing.T) {
+	t.Run("infra return specific error", func(t *testing.T) {
+		t.Run("ErrCustomerNotFound", func(t *testing.T) {
+			_ = get(t, fmt.Sprintf("http://localhost:1323/customer/%v", "notexistingid"), http.StatusNotFound)
+		})
+	})
 }
 
 func get(t *testing.T, url string, expectedStatus int) string {
