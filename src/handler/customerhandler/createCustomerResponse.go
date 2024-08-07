@@ -26,13 +26,6 @@ func convertToCreateCustomerErrorResponse(err error) CreateCustomerMultiErrorRes
 						Msg: customErr.Error(),
 					},
 				)
-			} else {
-				messages = append(messages,
-					openapi.ErrorElement{
-						Id:  message.ERRID00004.ErrorID(),
-						Msg: errors.Join(message.ERRID00004, err).Error(),
-					},
-				)
 			}
 		}
 	}
