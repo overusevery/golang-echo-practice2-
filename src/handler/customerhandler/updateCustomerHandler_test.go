@@ -1,6 +1,7 @@
 package customerhandler
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -30,11 +31,20 @@ func TestUpdateCustomerHandler(t *testing.T) {
 		res := testutil.PUT(e, "/customer/1", "../../../fixture/put_customer_request.json")
 		assert.Equal(t, http.StatusOK, res.Result().StatusCode)
 	})
-	t.Run("fake:internal server error", func(t *testing.T) {
+	t.Run("internal server error", func(t *testing.T) {
 		e, m, close := setUpdateCustomerMock(t)
 		defer close()
-		m.EXPECT().UpdateCustomer(gomock.Any(), gomock.Any())
-		res := testutil.PUT(e, "/customer/2", "../../../fixture/put_customer_request.json")
+		m.EXPECT().UpdateCustomer(gomock.Any(), gomock.Any()).Return(forceNewCustomer(
+			"1",
+			"山田 太郎",
+			"東京都練馬区豊玉北2-13-1",
+			"176-0013",
+			"03-1234-5678",
+			"個人",
+			"日本",
+			time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+		), errors.New("some error"))
+		res := testutil.PUT(e, "/customer/1", "../../../fixture/put_customer_request.json")
 		assert.Equal(t, http.StatusInternalServerError, res.Result().StatusCode)
 	})
 }
