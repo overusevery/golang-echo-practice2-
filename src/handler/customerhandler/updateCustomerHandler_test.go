@@ -19,6 +19,14 @@ func TestUpdateCustomerHandler(t *testing.T) {
 		h.RegisterRouter(e)
 		res := testutil.PUT(e, "/customer/1", "../../../fixture/put_customer_request.json")
 		assert.Equal(t, http.StatusOK, res.Result().StatusCode)
-
+	})
+	t.Run("fake:internal server error", func(t *testing.T) {
+		e := echo.New()
+		h := &UpdateCustomerHandler{
+			UpdateCustomerUseCase: &customerusecase.UpdateCustomerUseCase{},
+		}
+		h.RegisterRouter(e)
+		res := testutil.PUT(e, "/customer/2", "../../../fixture/put_customer_request.json")
+		assert.Equal(t, http.StatusInternalServerError, res.Result().StatusCode)
 	})
 }
