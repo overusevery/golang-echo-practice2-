@@ -27,3 +27,15 @@ func GET(e *echo.Echo, url string) *httptest.ResponseRecorder {
 	e.ServeHTTP(res, req)
 	return res
 }
+
+func PUT(e *echo.Echo, url string, jsonPath string) *httptest.ResponseRecorder {
+	requestJson, err := os.ReadFile(jsonPath)
+	if err != nil {
+		panic(err)
+	}
+	req := httptest.NewRequest(http.MethodPut, url, bytes.NewReader(requestJson))
+	req.Header.Set("Content-Type", "application/json")
+	res := httptest.NewRecorder()
+	e.ServeHTTP(res, req)
+	return res
+}
