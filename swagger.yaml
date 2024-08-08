@@ -39,6 +39,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    put:
+      summary: update customer by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "1"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerWithoudID'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /customer:
     post:
       summary: Create a new customer
@@ -47,7 +87,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewCustomer'
+              $ref: '#/components/schemas/CustomerWithoudID'
       responses:
         '200':
           description: Successful response
@@ -97,7 +137,7 @@ components:
           type: string
           format: date-time
           example: 1980-01-01T00:00:00Z
-    NewCustomer:
+    CustomerWithoudID:
       type: object
       properties:
         name:
