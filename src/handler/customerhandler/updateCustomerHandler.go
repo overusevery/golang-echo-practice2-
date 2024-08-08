@@ -21,7 +21,7 @@ func (h *UpdateCustomerHandler) RegisterRouter(e *echo.Echo) {
 
 func (h *UpdateCustomerHandler) UpdateCustomer(c echo.Context) error {
 	id := c.Param("id")
-	err := h.UpdateCustomerUseCase.Execute(id)
+	err := h.UpdateCustomerUseCase.Execute(c.Request().Context(), id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "ng")
 	}
