@@ -12,10 +12,10 @@ type UpdateCustomerUseCase struct {
 	Repository repository.CustomerRepository
 }
 
-func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, id string) error {
+func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, id string, customer entity.Customer) error {
 	//fake implementation
 	if uc.Repository != nil {
-		uc.Repository.UpdateCustomer(ctx, entity.Customer{})
+		uc.Repository.UpdateCustomer(ctx, customer)
 	}
 	if id == "2" {
 		return errors.New("fake error")
