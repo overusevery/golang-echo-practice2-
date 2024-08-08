@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 )
 
@@ -27,20 +26,19 @@ func (h *UpdateCustomerHandler) UpdateCustomer(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "ng")
 	}
-	customer, err := entity.NewCustomer(
-		"1",
-		req.Name,
-		req.Address,
-		req.Zip,
-		req.Phone,
-		req.Mktsegment,
-		req.Nation,
-		req.Birthdate,
+	customerRes, err := h.UpdateCustomerUseCase.Execute(
+		c.Request().Context(),
+		id,
+		customerusecase.UpdateCustomerUseCaseInput{
+			Name:          req.Name,
+			Address:       req.Address,
+			ZIP:           req.Zip,
+			Phone:         req.Phone,
+			MarketSegment: req.Mktsegment,
+			Nation:        req.Nation,
+			Birthdate:     req.Birthdate,
+		},
 	)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "ng")
-	}
-	customerRes, err := h.UpdateCustomerUseCase.Execute(c.Request().Context(), id, *customer)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "ng")
 	}
