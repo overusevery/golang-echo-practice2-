@@ -27,9 +27,19 @@ func TestUpdateCustomerHandler(t *testing.T) {
 			"個人",
 			"日本",
 			time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
-		)))
+		))).Return(forceNewCustomer(
+			"1",
+			"山田 太郎",
+			"東京都練馬区豊玉北2-13-1",
+			"176-0013",
+			"03-1234-5678",
+			"個人",
+			"日本",
+			time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+		), nil)
 		res := testutil.PUT(e, "/customer/1", "../../../fixture/put_customer_request.json")
 		assert.Equal(t, http.StatusOK, res.Result().StatusCode)
+		testutil.AssertResBodyIsEquWithJson(t, res, "../../../fixture/put_customer_response.json")
 	})
 	t.Run("internal server error", func(t *testing.T) {
 		e, m, close := setUpdateCustomerMock(t)
