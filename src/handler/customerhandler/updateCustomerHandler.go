@@ -40,10 +40,10 @@ func (h *UpdateCustomerHandler) UpdateCustomer(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "ng")
 	}
-	err = h.UpdateCustomerUseCase.Execute(c.Request().Context(), id, *customer)
+	customerRes, err := h.UpdateCustomerUseCase.Execute(c.Request().Context(), id, *customer)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "ng")
 	}
 
-	return c.JSON(http.StatusOK, "ok")
+	return c.JSON(http.StatusOK, convertToUpdateCustomerResponse(customerRes))
 }
