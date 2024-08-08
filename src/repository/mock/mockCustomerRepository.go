@@ -69,3 +69,18 @@ func (mr *MockCustomerRepositoryMockRecorder) GetCustomer(ctx, id any) *gomock.C
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCustomer", reflect.TypeOf((*MockCustomerRepository)(nil).GetCustomer), ctx, id)
 }
+
+// UpdateCustomer mocks base method.
+func (m *MockCustomerRepository) UpdateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateCustomer", ctx, customer)
+	ret0, _ := ret[0].(*entity.Customer)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateCustomer indicates an expected call of UpdateCustomer.
+func (mr *MockCustomerRepositoryMockRecorder) UpdateCustomer(ctx, customer any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCustomer", reflect.TypeOf((*MockCustomerRepository)(nil).UpdateCustomer), ctx, customer)
+}

@@ -94,6 +94,10 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 	return entityCustomer, errRun
 }
 
+func (r *RealCustomerRepository) UpdateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
+	panic("Not Implemented")
+}
+
 type DBCustomer struct {
 	ID            string
 	Name          string

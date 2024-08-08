@@ -1,8 +1,13 @@
 package customerusecase
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
+)
 
 type UpdateCustomerUseCase struct {
+	Repository repository.CustomerRepository
 }
 
 func (uc *UpdateCustomerUseCase) Execute(id string) error {

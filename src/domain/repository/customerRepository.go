@@ -11,6 +11,7 @@ import (
 type CustomerRepository interface {
 	GetCustomer(ctx context.Context, id string) (*entity.Customer, error)
 	CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error)
+	UpdateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error)
 }
 
 var (
