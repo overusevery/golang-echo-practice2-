@@ -24,10 +24,17 @@ func TestCustomerCreate(t *testing.T) {
 
 func TestCustomerUpdate(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
-		resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/create_customer_request.json", http.StatusOK)
-		_ = put(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/put_customer_request.json", http.StatusOK)
+		resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/e2e/TestCustomerUpdate/create_customer_request.json", http.StatusOK)
+		_ = put(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request.json", http.StatusOK)
 		resGetJson := get(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), http.StatusOK)
-		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/put_customer_response.customassertion.json", resGetJson)
+		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerUpdate/put_customer_response.customassertion.json", resGetJson)
+	})
+	t.Run("optimistic concurrency control", func(t *testing.T) {
+		resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/e2e/TestCustomerUpdate/create_customer_request.json", http.StatusOK)
+		_ = put(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_1.json", http.StatusOK)
+		_ = put(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_2.json", http.StatusConflict)
+		resGetJson := get(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), http.StatusOK)
+		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerUpdate/put_customer_response.customassertion.json", resGetJson)
 	})
 }
 
