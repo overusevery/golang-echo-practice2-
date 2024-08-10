@@ -70,13 +70,18 @@ func put(t *testing.T, url string, jsonPath string, expectedStatus int) string {
 	request, err := os.ReadFile(jsonPath)
 	require.NoError(t, err)
 
-	resCreate, err := http.Post(url, "application/json", bytes.NewBuffer(request))
+	client := &http.Client{}
+	req, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(request))
+	req.Header.Set("Content-Type", "application/json")
 	require.NoError(t, err)
-	defer resCreate.Body.Close()
+	resUpdate, err := client.Do(req)
 
-	assert.Equal(t, expectedStatus, resCreate.StatusCode)
+	require.NoError(t, err)
+	defer resUpdate.Body.Close()
 
-	body, err := io.ReadAll(resCreate.Body)
+	assert.Equal(t, expectedStatus, resUpdate.StatusCode)
+
+	body, err := io.ReadAll(resUpdate.Body)
 	require.NoError(t, err)
 
 	return string(body)
