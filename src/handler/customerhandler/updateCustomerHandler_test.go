@@ -84,7 +84,7 @@ func setUpdateCustomerMock(t *testing.T) (*echo.Echo, *mock_repository.MockCusto
 	m := mock_repository.NewMockCustomerRepository(ctrl)
 
 	h := &UpdateCustomerHandler{
-		UpdateCustomerUseCase: &customerusecase.UpdateCustomerUseCase{Repository: m},
+		UpdateCustomerUseCase: customerusecase.NewUpdateCustomerUseCase(m),
 	}
 	h.RegisterRouter(e)
 	return e, m, ctrl.Finish

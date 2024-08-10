@@ -9,7 +9,13 @@ import (
 )
 
 type UpdateCustomerUseCase struct {
-	Repository repository.CustomerRepository
+	repository repository.CustomerRepository
+}
+
+func NewUpdateCustomerUseCase(repository repository.CustomerRepository) *UpdateCustomerUseCase {
+	return &UpdateCustomerUseCase{
+		repository: repository,
+	}
 }
 
 func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, id string, input UpdateCustomerUseCaseInput) (entity.Customer, error) {
@@ -26,7 +32,7 @@ func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, id string, input U
 	if err != nil {
 		return *customer, err
 	}
-	customerRes, err := uc.Repository.UpdateCustomer(ctx, *customer)
+	customerRes, err := uc.repository.UpdateCustomer(ctx, *customer)
 	return *customerRes, err
 }
 
