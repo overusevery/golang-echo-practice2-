@@ -33,7 +33,7 @@ import (
 //	}`
 //	result := compareJsonWithCustomAssertionJson(t, expected, actual) //->true
 func CompareJsonWithCustomAssertionJson(t assert.TestingT, expectedJsonPath string, actual string) bool {
-	expected, err := os.ReadFile("../../fixture/create_customer_response.customassertion.json")
+	expected, err := os.ReadFile(expectedJsonPath)
 	if err != nil {
 		t.Errorf("something odd!:%v", err)
 		return false

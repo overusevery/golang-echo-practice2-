@@ -95,7 +95,45 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 }
 
 func (r *RealCustomerRepository) UpdateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
-	panic("Not Implemented")
+	var entityCustomer *entity.Customer
+	errRun := RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
+		_, err := tx.ExecContext(ctx,
+			`UPDATE customers SET name = $1, address = $2, zip = $3, phone = $4, mktsegment = $5, nation = $6, birthdate = $7 WHERE id = $8`,
+			customer.Name,
+			customer.Address,
+			customer.ZIP,
+			customer.Phone,
+			customer.MarketSegment,
+			customer.Nation,
+			time.Time(customer.Birthdate),
+			customer.ID,
+		)
+		if err != nil {
+			return err
+		}
+
+		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, customer.ID)
+		dbCustomer := DBCustomer{}
+		err = row.Scan(&dbCustomer.ID,
+			&dbCustomer.Name,
+			&dbCustomer.Address,
+			&dbCustomer.ZIP,
+			&dbCustomer.Phone,
+			&dbCustomer.MarketSegment,
+			&dbCustomer.Nation,
+			&dbCustomer.Birthdate,
+		)
+		if err != nil {
+			return err
+		}
+
+		entityCustomer, err = dbCustomer.convertToEntity()
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return entityCustomer, errRun
 }
 
 type DBCustomer struct {

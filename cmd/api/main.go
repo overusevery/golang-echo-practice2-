@@ -51,6 +51,9 @@ func main() {
 
 	createCustomerHandler := handler.NewCreateCustomerHandler(customerusecase.NewCreateCustomerUseCase(r))
 	createCustomerHandler.RegisterRouter(e)
+
+	updateCustomerHandler := handler.NewUpdateCustomerHandler(customerusecase.NewUpdateCustomerUseCase(r))
+	updateCustomerHandler.RegisterRouter(e)
 	// Start server
 	server := http.Server{
 		Addr:        ":1323",

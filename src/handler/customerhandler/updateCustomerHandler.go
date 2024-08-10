@@ -49,5 +49,5 @@ func (h *UpdateCustomerHandler) UpdateCustomer(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "ng")
 	}
 
-	return c.JSON(http.StatusOK, convertToUpdateCustomerResponse(customerRes))
+	return c.JSON(http.StatusOK, convertToUpdateCustomerResponse(*customerRes))
 }

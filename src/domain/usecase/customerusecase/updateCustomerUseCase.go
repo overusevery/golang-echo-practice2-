@@ -18,7 +18,7 @@ func NewUpdateCustomerUseCase(repository repository.CustomerRepository) *UpdateC
 	}
 }
 
-func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, id string, input UpdateCustomerUseCaseInput) (entity.Customer, error) {
+func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, id string, input UpdateCustomerUseCaseInput) (*entity.Customer, error) {
 	customer, err := entity.NewCustomer(
 		id,
 		input.Name,
@@ -30,10 +30,13 @@ func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, id string, input U
 		input.Birthdate,
 	)
 	if err != nil {
-		return *customer, err
+		return nil, err
 	}
 	customerRes, err := uc.repository.UpdateCustomer(ctx, *customer)
-	return *customerRes, err
+	if err != nil {
+		return nil, err
+	}
+	return customerRes, nil
 }
 
 type UpdateCustomerUseCaseInput struct {
