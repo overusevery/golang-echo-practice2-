@@ -31,6 +31,7 @@ func TestCreateCustomer(t *testing.T) {
 					"個人",
 					"日本",
 					time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+					1,
 				)}).Return(forceNewCustomer(
 					"1",
 					"山田 太郎",
@@ -40,6 +41,7 @@ func TestCreateCustomer(t *testing.T) {
 					"個人",
 					"日本",
 					time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+					1,
 				), nil)
 
 				res := testutil.Post(e, "/customer", "../../../fixture/create_customer_request.json")
@@ -137,7 +139,7 @@ func setupCreateCustomerHandlerWithMock(t *testing.T, testFun func(m *mock_repos
 	testFun(m, e)
 }
 
-func forceNewCustomer(id string, name string, address string, zip string, phone string, marketSegment string, nation string, birthdate time.Time) *entity.Customer {
+func forceNewCustomer(id string, name string, address string, zip string, phone string, marketSegment string, nation string, birthdate time.Time, version int) *entity.Customer {
 	c, err := entity.NewCustomer(
 		id,
 		name,
@@ -147,6 +149,7 @@ func forceNewCustomer(id string, name string, address string, zip string, phone 
 		marketSegment,
 		nation,
 		birthdate,
+		version,
 	)
 	if err != nil {
 		panic(fmt.Errorf("failed to create customer in test code:%w", err))

@@ -34,6 +34,8 @@ type Customer struct {
 	Nation string `json:"nation,omitempty"`
 
 	Birthdate time.Time `json:"birthdate,omitempty"`
+
+	Version int `json:"version,omitempty"`
 }
 
 // AssertCustomerRequired checks if the required fields are not zero-ed

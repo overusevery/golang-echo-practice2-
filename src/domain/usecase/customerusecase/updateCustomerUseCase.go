@@ -28,6 +28,7 @@ func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, id string, input U
 		input.MarketSegment,
 		input.Nation,
 		input.Birthdate,
+		input.Version,
 	)
 	if err != nil {
 		return nil, err
@@ -47,4 +48,5 @@ type UpdateCustomerUseCaseInput struct {
 	MarketSegment string
 	Nation        string
 	Birthdate     time.Time
+	Version       int
 }

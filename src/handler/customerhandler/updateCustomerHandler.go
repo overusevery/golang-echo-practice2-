@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
+	"golang.org/x/exp/slog"
 )
 
 type UpdateCustomerHandler struct {
@@ -23,7 +24,7 @@ func (h *UpdateCustomerHandler) RegisterRouter(e *echo.Echo) {
 
 func (h *UpdateCustomerHandler) UpdateCustomer(c echo.Context) error {
 	id := c.Param("id")
-	req := CreateCustomerRequest{}
+	req := UpdateCustomerRequest{}
 	err := c.Bind(&req)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "ng")
@@ -39,14 +40,19 @@ func (h *UpdateCustomerHandler) UpdateCustomer(c echo.Context) error {
 			MarketSegment: req.Mktsegment,
 			Nation:        req.Nation,
 			Birthdate:     req.Birthdate,
+			Version:       req.Version,
 		},
 	)
 	if err != nil {
 		switch {
 		case errors.Is(err, repository.ErrCustomerNotFound):
 			return c.JSON(http.StatusNotFound, err)
+		case errors.Is(err, repository.ErrConflict):
+			return c.JSON(http.StatusConflict, err)
+		default:
+			slog.Error("UpdateCustomer Internal Server Error", "error", err, "request", req)
+			return c.JSON(http.StatusInternalServerError, "ng")
 		}
-		return c.JSON(http.StatusInternalServerError, "ng")
 	}
 
 	return c.JSON(http.StatusOK, convertToUpdateCustomerResponse(*customerRes))

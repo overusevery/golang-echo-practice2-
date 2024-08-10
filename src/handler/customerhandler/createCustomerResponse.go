@@ -45,5 +45,6 @@ func convertToCreateCustomerResponse(customer entity.Customer) CreateCustomerRes
 		Mktsegment: customer.MarketSegment,
 		Nation:     string(customer.Nation),
 		Birthdate:  time.Time(customer.Birthdate),
+		Version:    customer.GetVersion(),
 	}
 }

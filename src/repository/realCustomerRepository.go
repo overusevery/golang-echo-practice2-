@@ -23,7 +23,7 @@ func NewRealCustomerRepository(db *sql.DB) *RealCustomerRepository {
 func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id string) (*entity.Customer, error) {
 	var entityCustomer *entity.Customer
 	errTranscation := RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
-		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, id)
+		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate, version FROM customers WHERE id = $1`, id)
 		dbCustomer := DBCustomer{}
 		err := row.Scan(&dbCustomer.ID,
 			&dbCustomer.Name,
@@ -33,6 +33,7 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id string) (*e
 			&dbCustomer.MarketSegment,
 			&dbCustomer.Nation,
 			&dbCustomer.Birthdate,
+			&dbCustomer.Version,
 		)
 		if err != nil {
 			switch {
@@ -55,8 +56,8 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 	var entityCustomer *entity.Customer
 	errRun := RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
 		_, err := tx.ExecContext(ctx,
-			`INSERT INTO customers (id, name, address, zip, phone, mktsegment, nation, birthdate)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+			`INSERT INTO customers (id, name, address, zip, phone, mktsegment, nation, birthdate, version)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
 			customer.ID,
 			customer.Name,
 			customer.Address,
@@ -65,12 +66,13 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 			customer.MarketSegment,
 			customer.Nation,
 			time.Time(customer.Birthdate),
+			customer.GetVersion(),
 		)
 		if err != nil {
 			return err
 		}
 
-		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, customer.ID)
+		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate, version FROM customers WHERE id = $1`, customer.ID)
 		dbCustomer := DBCustomer{}
 		err = row.Scan(&dbCustomer.ID,
 			&dbCustomer.Name,
@@ -80,6 +82,7 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 			&dbCustomer.MarketSegment,
 			&dbCustomer.Nation,
 			&dbCustomer.Birthdate,
+			&dbCustomer.Version,
 		)
 		if err != nil {
 			return err
@@ -97,8 +100,8 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 func (r *RealCustomerRepository) UpdateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
 	var entityCustomer *entity.Customer
 	errRun := RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
-		_, err := tx.ExecContext(ctx,
-			`UPDATE customers SET name = $1, address = $2, zip = $3, phone = $4, mktsegment = $5, nation = $6, birthdate = $7 WHERE id = $8`,
+		result, err := tx.ExecContext(ctx,
+			`UPDATE customers SET name = $1, address = $2, zip = $3, phone = $4, mktsegment = $5, nation = $6, birthdate = $7, version = $8 WHERE id = $9 and version = $10`,
 			customer.Name,
 			customer.Address,
 			customer.ZIP,
@@ -106,13 +109,22 @@ func (r *RealCustomerRepository) UpdateCustomer(ctx context.Context, customer en
 			customer.MarketSegment,
 			customer.Nation,
 			time.Time(customer.Birthdate),
+			customer.GetVersion()+1,
 			customer.ID,
+			customer.GetVersion(),
 		)
 		if err != nil {
 			return err
 		}
+		numAffectedRows, err := result.RowsAffected()
+		if err != nil {
+			return err
+		}
+		if numAffectedRows == 0 {
+			return repository.ErrConflict
+		}
 
-		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate FROM customers WHERE id = $1`, customer.ID)
+		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate, version FROM customers WHERE id = $1`, customer.ID)
 		dbCustomer := DBCustomer{}
 		err = row.Scan(&dbCustomer.ID,
 			&dbCustomer.Name,
@@ -122,6 +134,7 @@ func (r *RealCustomerRepository) UpdateCustomer(ctx context.Context, customer en
 			&dbCustomer.MarketSegment,
 			&dbCustomer.Nation,
 			&dbCustomer.Birthdate,
+			&dbCustomer.Version,
 		)
 		if err != nil {
 			return err
@@ -145,6 +158,7 @@ type DBCustomer struct {
 	MarketSegment string
 	Nation        string
 	Birthdate     time.Time
+	Version       int
 }
 
 func (d *DBCustomer) convertToEntity() (*entity.Customer, error) {
@@ -157,6 +171,7 @@ func (d *DBCustomer) convertToEntity() (*entity.Customer, error) {
 		d.MarketSegment,
 		d.Nation,
 		d.Birthdate,
+		d.Version,
 	)
 	if err != nil {
 		return nil, err

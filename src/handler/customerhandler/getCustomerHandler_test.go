@@ -28,6 +28,7 @@ func TestGetCustomer(t *testing.T) {
 				"個人",
 				"日本",
 				time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+				1,
 			), nil)
 
 			res := testutil.GET(e, "/customer/1")

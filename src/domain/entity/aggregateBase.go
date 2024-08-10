@@ -11,13 +11,12 @@ type Aggregate struct {
 	version int
 }
 
-func NewAggregate(version int) (*Aggregate, error) {
+func NewAggregate(version int) (Aggregate, error) {
 	if version <= 0 {
-		return nil, fmt.Errorf("version cannot be %v:%w", version, ErrInvalidVersion)
+		return Aggregate{}, fmt.Errorf("version cannot be %v:%w", version, ErrInvalidVersion)
 	}
 
-	a := Aggregate{version: version}
-	return &a, nil
+	return Aggregate{version: version}, nil
 }
 
 func (a Aggregate) GetVersion() int {

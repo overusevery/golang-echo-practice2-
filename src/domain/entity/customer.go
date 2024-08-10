@@ -9,6 +9,7 @@ import (
 )
 
 type Customer struct {
+	Aggregate
 	ID            value.ID
 	Name          string
 	Address       string
@@ -19,7 +20,7 @@ type Customer struct {
 	Birthdate     value.Birthdate
 }
 
-func NewCustomer(id string, name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, error) {
+func NewCustomer(id string, name, address, zip, phone, marketSegment, nation string, birthdate time.Time, version int) (*Customer, error) {
 	errList := []error{}
 	c := &Customer{
 		ID:            value.NewID(id),
@@ -30,6 +31,7 @@ func NewCustomer(id string, name, address, zip, phone, marketSegment, nation str
 		MarketSegment: marketSegment,
 		Birthdate:     entityutil.WrapNew(value.NewBirthdate, &errList)(value.NewBirthdateInput{T: birthdate, Now: time.Now()}),
 		Nation:        entityutil.WrapNew(value.NewNation, &errList)(nation),
+		Aggregate:     entityutil.WrapNew(NewAggregate, &errList)(version),
 	}
 	if len(errList) > 0 {
 		return nil, util.NewValidationErrorList(errList...)
@@ -38,6 +40,6 @@ func NewCustomer(id string, name, address, zip, phone, marketSegment, nation str
 }
 
 func NewCustomerNotRegistered(name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, error) {
-	c, err := NewCustomer(value.GenerateNewIDString(), name, address, zip, phone, marketSegment, nation, birthdate)
+	c, err := NewCustomer(value.GenerateNewIDString(), name, address, zip, phone, marketSegment, nation, birthdate, 1)
 	return c, err
 }

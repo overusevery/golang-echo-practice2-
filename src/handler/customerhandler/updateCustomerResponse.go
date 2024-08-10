@@ -22,5 +22,6 @@ func convertToUpdateCustomerResponse(customer entity.Customer) UpdateCustomerRes
 		Mktsegment: customer.MarketSegment,
 		Nation:     string(customer.Nation),
 		Birthdate:  time.Time(customer.Birthdate),
+		Version:    customer.GetVersion(),
 	}
 }
