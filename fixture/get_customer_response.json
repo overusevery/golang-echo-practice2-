@@ -6,5 +6,6 @@
   "phone": "03-1234-5678",
   "mktsegment": "個人",
   "nation": "日本",
-  "birthdate": "1980-01-01T00:00:00Z"
+  "birthdate": "1980-01-01T00:00:00Z",
+  "version": 1
 }

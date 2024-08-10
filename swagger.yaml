@@ -137,6 +137,9 @@ components:
           type: string
           format: date-time
           example: 1980-01-01T00:00:00Z
+        version:
+          type: int
+          example: 1
     CustomerWithoudID:
       type: object
       properties:
