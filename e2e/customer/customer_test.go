@@ -22,6 +22,15 @@ func TestCustomerCreate(t *testing.T) {
 	})
 }
 
+func TestCustomerUpdate(t *testing.T) {
+	t.Run("standard", func(t *testing.T) {
+		resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/create_customer_request.json", http.StatusOK)
+		_ = put(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/put_customer_response.customassertion.json", http.StatusOK)
+		resGetJson := get(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), http.StatusOK)
+		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/put_customer_response.json", resGetJson)
+	})
+}
+
 func TestGetCustomer(t *testing.T) {
 	t.Run("infra return specific error", func(t *testing.T) {
 		t.Run("ErrCustomerNotFound", func(t *testing.T) {
@@ -42,6 +51,22 @@ func get(t *testing.T, url string, expectedStatus int) string {
 }
 
 func post(t *testing.T, url string, jsonPath string, expectedStatus int) string {
+	request, err := os.ReadFile(jsonPath)
+	require.NoError(t, err)
+
+	resCreate, err := http.Post(url, "application/json", bytes.NewBuffer(request))
+	require.NoError(t, err)
+	defer resCreate.Body.Close()
+
+	assert.Equal(t, expectedStatus, resCreate.StatusCode)
+
+	body, err := io.ReadAll(resCreate.Body)
+	require.NoError(t, err)
+
+	return string(body)
+}
+
+func put(t *testing.T, url string, jsonPath string, expectedStatus int) string {
 	request, err := os.ReadFile(jsonPath)
 	require.NoError(t, err)
 
