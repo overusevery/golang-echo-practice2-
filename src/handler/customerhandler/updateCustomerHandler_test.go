@@ -21,22 +21,22 @@ func TestUpdateCustomerHandler(t *testing.T) {
 		defer close()
 		m.EXPECT().UpdateCustomer(gomock.Any(), gomock.Eq(*forceNewCustomer(
 			"1",
-			"山田 太郎",
-			"東京都練馬区豊玉北2-13-1",
-			"176-0013",
-			"03-1234-5678",
-			"個人",
-			"日本",
-			time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+			"new name",
+			"new address",
+			"xxx-xxx-xxx",
+			"11-111-111",
+			"company",
+			"JP",
+			time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC),
 		))).Return(forceNewCustomer(
 			"1",
-			"山田 太郎",
-			"東京都練馬区豊玉北2-13-1",
-			"176-0013",
-			"03-1234-5678",
-			"個人",
-			"日本",
-			time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+			"new name",
+			"new address",
+			"xxx-xxx-xxx",
+			"11-111-111",
+			"company",
+			"JP",
+			time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC),
 		), nil)
 		res := testutil.PUT(e, "/customer/1", "../../../fixture/put_customer_request.json")
 		assert.Equal(t, http.StatusOK, res.Result().StatusCode)
@@ -47,13 +47,13 @@ func TestUpdateCustomerHandler(t *testing.T) {
 		defer close()
 		m.EXPECT().UpdateCustomer(gomock.Any(), gomock.Any()).Return(forceNewCustomer(
 			"1",
-			"山田 太郎",
-			"東京都練馬区豊玉北2-13-1",
-			"176-0013",
-			"03-1234-5678",
-			"個人",
-			"日本",
-			time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+			"new name",
+			"new address",
+			"xxx-xxx-xxx",
+			"11-111-111",
+			"company",
+			"JP",
+			time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC),
 		), repository.ErrCustomerNotFound)
 		res := testutil.PUT(e, "/customer/notexist", "../../../fixture/put_customer_request.json")
 		assert.Equal(t, http.StatusNotFound, res.Result().StatusCode)
@@ -63,13 +63,13 @@ func TestUpdateCustomerHandler(t *testing.T) {
 		defer close()
 		m.EXPECT().UpdateCustomer(gomock.Any(), gomock.Any()).Return(forceNewCustomer(
 			"1",
-			"山田 太郎",
-			"東京都練馬区豊玉北2-13-1",
-			"176-0013",
-			"03-1234-5678",
-			"個人",
-			"日本",
-			time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+			"new name",
+			"new address",
+			"xxx-xxx-xxx",
+			"11-111-111",
+			"company",
+			"JP",
+			time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC),
 		), errors.New("some error"))
 		res := testutil.PUT(e, "/customer/1", "../../../fixture/put_customer_request.json")
 		assert.Equal(t, http.StatusInternalServerError, res.Result().StatusCode)
