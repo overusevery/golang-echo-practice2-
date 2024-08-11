@@ -55,6 +55,20 @@ func (mr *MockCustomerRepositoryMockRecorder) CreateCustomer(ctx, customer any) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCustomer", reflect.TypeOf((*MockCustomerRepository)(nil).CreateCustomer), ctx, customer)
 }
 
+// DeleteCustomer mocks base method.
+func (m *MockCustomerRepository) DeleteCustomer(ctx context.Context, id string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteCustomer", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteCustomer indicates an expected call of DeleteCustomer.
+func (mr *MockCustomerRepositoryMockRecorder) DeleteCustomer(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCustomer", reflect.TypeOf((*MockCustomerRepository)(nil).DeleteCustomer), ctx, id)
+}
+
 // GetCustomer mocks base method.
 func (m *MockCustomerRepository) GetCustomer(ctx context.Context, id string) (*entity.Customer, error) {
 	m.ctrl.T.Helper()

@@ -149,6 +149,10 @@ func (r *RealCustomerRepository) UpdateCustomer(ctx context.Context, customer en
 	return entityCustomer, errRun
 }
 
+func (r *RealCustomerRepository) DeleteCustomer(ctx context.Context, id string) error {
+	panic("not implemented")
+}
+
 type DBCustomer struct {
 	ID            string
 	Name          string
