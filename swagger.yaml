@@ -39,6 +39,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete customer by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     put:
       summary: update customer by ID
       parameters:
@@ -168,6 +196,15 @@ components:
         version:
           type: int
           example: 1
+    SuccessMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1
+        deleted:
+          type: boolean
+          example: true
     Error:
       type: object
       properties:

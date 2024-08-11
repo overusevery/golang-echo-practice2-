@@ -39,3 +39,10 @@ func PUT(e *echo.Echo, url string, jsonPath string) *httptest.ResponseRecorder {
 	e.ServeHTTP(res, req)
 	return res
 }
+
+func DELETE(e *echo.Echo, url string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	res := httptest.NewRecorder()
+	e.ServeHTTP(res, req)
+	return res
+}
