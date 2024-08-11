@@ -16,9 +16,9 @@ import (
 
 func TestCustomerCreate(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
-		resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/create_customer_request.json", http.StatusOK)
+		resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/e2e/TestCustomerCreate/create_customer_request.json", http.StatusOK)
 		resGetJson := get(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), http.StatusOK)
-		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/create_customer_response.customassertion.json", resGetJson)
+		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerCreate/create_customer_response.customassertion.json", resGetJson)
 	})
 }
 
