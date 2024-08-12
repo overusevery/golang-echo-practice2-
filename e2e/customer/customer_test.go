@@ -3,7 +3,6 @@ package e2e
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -40,10 +39,10 @@ func TestCustomerUpdate(t *testing.T) {
 		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerUpdate/create_customer_request.json")
 		assert.Equal(t, http.StatusOK, statusCode)
 
-		statusCode, _ = put(t, url("/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request.json")
+		statusCode, _ = put(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request.json")
 		assert.Equal(t, http.StatusOK, statusCode)
 
-		statusCode, resGetJson := get(t, url("/customer/%v", getFieldInJsonString(t, resCreateJson, "id")))
+		statusCode, resGetJson := get(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")))
 		assert.Equal(t, http.StatusOK, statusCode)
 		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerUpdate/put_customer_response.customassertion.json", resGetJson)
 	})
@@ -51,13 +50,13 @@ func TestCustomerUpdate(t *testing.T) {
 		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerUpdate/create_customer_request.json")
 		assert.Equal(t, http.StatusOK, statusCode)
 
-		statusCode, _ = put(t, url("/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_1.json")
+		statusCode, _ = put(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_1.json")
 		assert.Equal(t, http.StatusOK, statusCode)
 
-		statusCode, _ = put(t, url("/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_2.json")
+		statusCode, _ = put(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_2.json")
 		assert.Equal(t, http.StatusConflict, statusCode)
 
-		statusCode, resGetJson := get(t, url("/customer/%v", getFieldInJsonString(t, resCreateJson, "id")))
+		statusCode, resGetJson := get(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")))
 		assert.Equal(t, http.StatusOK, statusCode)
 		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerUpdate/put_customer_response.customassertion.json", resGetJson)
 	})
@@ -66,7 +65,7 @@ func TestCustomerUpdate(t *testing.T) {
 func TestGetCustomer(t *testing.T) {
 	t.Run("infra return specific error", func(t *testing.T) {
 		t.Run("ErrCustomerNotFound", func(t *testing.T) {
-			statusCode, _ := get(t, fmt.Sprintf(url("/customer/%v"), "notexistingid"))
+			statusCode, _ := get(t, url("/customer/", "notexistingid"))
 			assert.Equal(t, http.StatusNotFound, statusCode)
 		})
 	})
