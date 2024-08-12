@@ -4,15 +4,15 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
+	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 )
 
 type DeleteCustomerHandler struct {
-	repository repository.CustomerRepository
+	DeleteCustomerUseCase customerusecase.DeleteCustomerUseCase
 }
 
-func NewDeleteCustomerHandler(repository repository.CustomerRepository) *DeleteCustomerHandler {
-	return &DeleteCustomerHandler{repository: repository}
+func NewDeleteCustomerHandler(usecase customerusecase.DeleteCustomerUseCase) *DeleteCustomerHandler {
+	return &DeleteCustomerHandler{DeleteCustomerUseCase: usecase}
 }
 
 func (h *DeleteCustomerHandler) RegisterRouter(e *echo.Echo) {
@@ -21,6 +21,6 @@ func (h *DeleteCustomerHandler) RegisterRouter(e *echo.Echo) {
 
 func (h *DeleteCustomerHandler) DeleteCustomer(c echo.Context) error {
 	id := c.Param("id")
-	h.repository.DeleteCustomer(c.Request().Context(), id)
+	h.DeleteCustomerUseCase.Execute(c.Request().Context(), id)
 	return c.JSON(http.StatusOK, id)
 }

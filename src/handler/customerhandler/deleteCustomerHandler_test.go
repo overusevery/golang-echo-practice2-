@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
+	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 	mock_repository "github.com/overusevery/golang-echo-practice2/src/repository/mock"
 	"github.com/overusevery/golang-echo-practice2/testutil"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +18,7 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		m := mock_repository.NewMockCustomerRepository(ctrl)
-		h := NewDeleteCustomerHandler(m)
+		h := NewDeleteCustomerHandler(*customerusecase.NewDeleteCustomerUseCase(m))
 		h.RegisterRouter(e)
 
 		m.EXPECT().DeleteCustomer(gomock.Any(), "1")
