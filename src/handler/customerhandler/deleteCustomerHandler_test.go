@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
+	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 	mock_repository "github.com/overusevery/golang-echo-practice2/src/repository/mock"
 	"github.com/overusevery/golang-echo-practice2/testutil"
@@ -21,6 +22,14 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 		m.EXPECT().DeleteCustomer(gomock.Any(), "1")
 		res := testutil.GET(e, "/customer/1")
 		assert.Equal(t, http.StatusOK, res.Result().StatusCode)
+	})
+	t.Run("not found", func(t *testing.T) {
+		e, close, m := setupMock(t)
+		defer close()
+
+		m.EXPECT().DeleteCustomer(gomock.Any(), "1").Return(repository.ErrCustomerNotFound)
+		res := testutil.GET(e, "/customer/1")
+		assert.Equal(t, http.StatusNotFound, res.Result().StatusCode)
 	})
 	t.Run("internal server error", func(t *testing.T) {
 		e, close, m := setupMock(t)
