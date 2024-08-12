@@ -25,6 +25,7 @@ func url(path ...string) string {
 
 func TestCustomerCreate(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
+		t.FailNow()
 		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerCreate/create_customer_request.json")
 		assert.Equal(t, http.StatusOK, statusCode)
 
@@ -59,6 +60,19 @@ func TestCustomerUpdate(t *testing.T) {
 		statusCode, resGetJson := get(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")))
 		assert.Equal(t, http.StatusOK, statusCode)
 		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerUpdate/put_customer_response.customassertion.json", resGetJson)
+	})
+}
+
+func TestCustomerDelete(t *testing.T) {
+	t.Run("standard", func(t *testing.T) {
+		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerDelete/create_customer_request.json")
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		statusCode, _ = delete(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")))
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		statusCode, _ = get(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")))
+		assert.Equal(t, http.StatusNotFound, statusCode)
 	})
 }
 
@@ -102,6 +116,21 @@ func put(t *testing.T, url string, jsonPath string) (int, string) {
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(request))
 	req.Header.Set("Content-Type", "application/json")
+	require.NoError(t, err)
+	resUpdate, err := client.Do(req)
+
+	require.NoError(t, err)
+	defer resUpdate.Body.Close()
+
+	body, err := io.ReadAll(resUpdate.Body)
+	require.NoError(t, err)
+
+	return resUpdate.StatusCode, string(body)
+}
+
+func delete(t *testing.T, url string) (int, string) {
+	client := &http.Client{}
+	req, err := http.NewRequest(http.MethodDelete, url, nil)
 	require.NoError(t, err)
 	resUpdate, err := client.Do(req)
 
