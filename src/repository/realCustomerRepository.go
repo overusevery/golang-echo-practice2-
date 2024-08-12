@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
@@ -162,15 +161,10 @@ func (r *RealCustomerRepository) DeleteCustomer(ctx context.Context, id string) 
 			return err
 		}
 
-		switch n {
-		case 0:
+		if n == 0 {
 			return repository.ErrCustomerNotFound
-		case 1:
-			return nil
-		default:
-			return fmt.Errorf("the number of deleted customer is %v:%w", n, errors.New("invalid number of customers is deleted"))
 		}
-
+		return nil
 	})
 }
 
