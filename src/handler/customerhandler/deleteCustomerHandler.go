@@ -21,6 +21,9 @@ func (h *DeleteCustomerHandler) RegisterRouter(e *echo.Echo) {
 
 func (h *DeleteCustomerHandler) DeleteCustomer(c echo.Context) error {
 	id := c.Param("id")
-	h.DeleteCustomerUseCase.Execute(c.Request().Context(), id)
+	err := h.DeleteCustomerUseCase.Execute(c.Request().Context(), id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, id)
+	}
 	return c.JSON(http.StatusOK, id)
 }

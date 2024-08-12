@@ -1,6 +1,7 @@
 package customerhandler
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 
@@ -14,16 +15,24 @@ import (
 
 func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		e, close, m := newFunction(t)
+		e, close, m := setupMock(t)
 		defer close()
 
 		m.EXPECT().DeleteCustomer(gomock.Any(), "1")
 		res := testutil.GET(e, "/customer/1")
 		assert.Equal(t, http.StatusOK, res.Result().StatusCode)
 	})
+	t.Run("internal server error", func(t *testing.T) {
+		e, close, m := setupMock(t)
+		defer close()
+
+		m.EXPECT().DeleteCustomer(gomock.Any(), "1").Return(errors.New("some error"))
+		res := testutil.GET(e, "/customer/1")
+		assert.Equal(t, http.StatusInternalServerError, res.Result().StatusCode)
+	})
 }
 
-func newFunction(t *testing.T) (*echo.Echo, func(), *mock_repository.MockCustomerRepository) {
+func setupMock(t *testing.T) (*echo.Echo, func(), *mock_repository.MockCustomerRepository) {
 	e := echo.New()
 	ctrl := gomock.NewController(t)
 	close := func() {
