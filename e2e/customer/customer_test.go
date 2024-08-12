@@ -25,7 +25,6 @@ func url(path ...string) string {
 
 func TestCustomerCreate(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
-		t.FailNow()
 		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerCreate/create_customer_request.json")
 		assert.Equal(t, http.StatusOK, statusCode)
 
