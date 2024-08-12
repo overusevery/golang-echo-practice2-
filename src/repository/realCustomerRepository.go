@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
@@ -150,7 +151,27 @@ func (r *RealCustomerRepository) UpdateCustomer(ctx context.Context, customer en
 }
 
 func (r *RealCustomerRepository) DeleteCustomer(ctx context.Context, id string) error {
-	panic("not implemented")
+	return RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
+		result, err := tx.ExecContext(ctx, `DELETE FROM customers WHERE id = $1`, id)
+		if err != nil {
+			return err
+		}
+
+		n, err := result.RowsAffected()
+		if err != nil {
+			return err
+		}
+
+		switch n {
+		case 0:
+			return repository.ErrCustomerNotFound
+		case 1:
+			return nil
+		default:
+			return fmt.Errorf("the number of deleted customer is %v:%w", n, errors.New("invalid number of customers is deleted"))
+		}
+
+	})
 }
 
 type DBCustomer struct {

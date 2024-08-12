@@ -18,7 +18,7 @@ func NewDeleteCustomerHandler(usecase customerusecase.DeleteCustomerUseCase) *De
 }
 
 func (h *DeleteCustomerHandler) RegisterRouter(e *echo.Echo) {
-	e.GET("/customer/:id", h.DeleteCustomer)
+	e.DELETE("/customer/:id", h.DeleteCustomer)
 }
 
 func (h *DeleteCustomerHandler) DeleteCustomer(c echo.Context) error {

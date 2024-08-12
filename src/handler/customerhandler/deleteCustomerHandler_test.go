@@ -20,7 +20,7 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 		defer close()
 
 		m.EXPECT().DeleteCustomer(gomock.Any(), "1")
-		res := testutil.GET(e, "/customer/1")
+		res := testutil.DELETE(e, "/customer/1")
 		assert.Equal(t, http.StatusOK, res.Result().StatusCode)
 	})
 	t.Run("not found", func(t *testing.T) {
@@ -28,7 +28,7 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 		defer close()
 
 		m.EXPECT().DeleteCustomer(gomock.Any(), "1").Return(repository.ErrCustomerNotFound)
-		res := testutil.GET(e, "/customer/1")
+		res := testutil.DELETE(e, "/customer/1")
 		assert.Equal(t, http.StatusNotFound, res.Result().StatusCode)
 	})
 	t.Run("internal server error", func(t *testing.T) {
@@ -36,7 +36,7 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 		defer close()
 
 		m.EXPECT().DeleteCustomer(gomock.Any(), "1").Return(errors.New("some error"))
-		res := testutil.GET(e, "/customer/1")
+		res := testutil.DELETE(e, "/customer/1")
 		assert.Equal(t, http.StatusInternalServerError, res.Result().StatusCode)
 	})
 }
