@@ -73,6 +73,13 @@ func TestCustomerDelete(t *testing.T) {
 		statusCode, _ = get(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")))
 		assert.Equal(t, http.StatusNotFound, statusCode)
 	})
+	t.Run("infra return specific error", func(t *testing.T) {
+		t.Run("ErrCustomerNotFound", func(t *testing.T) {
+			statusCode, _ := delete(t, url("/customer/", "notexistingid"))
+			assert.Equal(t, http.StatusNotFound, statusCode)
+		})
+	})
+
 }
 
 func TestGetCustomer(t *testing.T) {
