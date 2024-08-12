@@ -14,26 +14,51 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const HOST = "http://localhost:1323"
+
+func url(path ...string) string {
+	concantenated := HOST
+	for _, p := range path {
+		concantenated = concantenated + p
+	}
+	return concantenated
+}
+
 func TestCustomerCreate(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
-		resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/e2e/TestCustomerCreate/create_customer_request.json", http.StatusOK)
-		resGetJson := get(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), http.StatusOK)
+		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerCreate/create_customer_request.json")
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		statusCode, resGetJson := get(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")))
+		assert.Equal(t, http.StatusOK, statusCode)
 		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerCreate/create_customer_response.customassertion.json", resGetJson)
 	})
 }
 
 func TestCustomerUpdate(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
-		resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/e2e/TestCustomerUpdate/create_customer_request.json", http.StatusOK)
-		_ = put(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request.json", http.StatusOK)
-		resGetJson := get(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), http.StatusOK)
+		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerUpdate/create_customer_request.json")
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		statusCode, _ = put(t, url("/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request.json")
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		statusCode, resGetJson := get(t, url("/customer/%v", getFieldInJsonString(t, resCreateJson, "id")))
+		assert.Equal(t, http.StatusOK, statusCode)
 		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerUpdate/put_customer_response.customassertion.json", resGetJson)
 	})
 	t.Run("optimistic concurrency control", func(t *testing.T) {
-		resCreateJson := post(t, "http://localhost:1323/customer", "../../fixture/e2e/TestCustomerUpdate/create_customer_request.json", http.StatusOK)
-		_ = put(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_1.json", http.StatusOK)
-		_ = put(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_2.json", http.StatusConflict)
-		resGetJson := get(t, fmt.Sprintf("http://localhost:1323/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), http.StatusOK)
+		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerUpdate/create_customer_request.json")
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		statusCode, _ = put(t, url("/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_1.json")
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		statusCode, _ = put(t, url("/customer/%v", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_2.json")
+		assert.Equal(t, http.StatusConflict, statusCode)
+
+		statusCode, resGetJson := get(t, url("/customer/%v", getFieldInJsonString(t, resCreateJson, "id")))
+		assert.Equal(t, http.StatusOK, statusCode)
 		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerUpdate/put_customer_response.customassertion.json", resGetJson)
 	})
 }
@@ -41,23 +66,23 @@ func TestCustomerUpdate(t *testing.T) {
 func TestGetCustomer(t *testing.T) {
 	t.Run("infra return specific error", func(t *testing.T) {
 		t.Run("ErrCustomerNotFound", func(t *testing.T) {
-			_ = get(t, fmt.Sprintf("http://localhost:1323/customer/%v", "notexistingid"), http.StatusNotFound)
+			statusCode, _ := get(t, fmt.Sprintf(url("/customer/%v"), "notexistingid"))
+			assert.Equal(t, http.StatusNotFound, statusCode)
 		})
 	})
 }
 
-func get(t *testing.T, url string, expectedStatus int) string {
+func get(t *testing.T, url string) (int, string) {
 	resGet, err := http.Get(url)
 	require.NoError(t, err)
 	defer resGet.Body.Close()
 
-	assert.Equal(t, expectedStatus, resGet.StatusCode)
 	resGetJson, err := io.ReadAll(resGet.Body)
 	require.NoError(t, err)
-	return string(resGetJson)
+	return resGet.StatusCode, string(resGetJson)
 }
 
-func post(t *testing.T, url string, jsonPath string, expectedStatus int) string {
+func post(t *testing.T, url string, jsonPath string) (int, string) {
 	request, err := os.ReadFile(jsonPath)
 	require.NoError(t, err)
 
@@ -65,15 +90,13 @@ func post(t *testing.T, url string, jsonPath string, expectedStatus int) string 
 	require.NoError(t, err)
 	defer resCreate.Body.Close()
 
-	assert.Equal(t, expectedStatus, resCreate.StatusCode)
-
 	body, err := io.ReadAll(resCreate.Body)
 	require.NoError(t, err)
 
-	return string(body)
+	return resCreate.StatusCode, string(body)
 }
 
-func put(t *testing.T, url string, jsonPath string, expectedStatus int) string {
+func put(t *testing.T, url string, jsonPath string) (int, string) {
 	request, err := os.ReadFile(jsonPath)
 	require.NoError(t, err)
 
@@ -86,12 +109,10 @@ func put(t *testing.T, url string, jsonPath string, expectedStatus int) string {
 	require.NoError(t, err)
 	defer resUpdate.Body.Close()
 
-	assert.Equal(t, expectedStatus, resUpdate.StatusCode)
-
 	body, err := io.ReadAll(resUpdate.Body)
 	require.NoError(t, err)
 
-	return string(body)
+	return resUpdate.StatusCode, string(body)
 }
 
 func getFieldInJsonString(t *testing.T, jsonString string, field string) string {
