@@ -1,9 +1,11 @@
 package customerhandler
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
@@ -19,6 +21,17 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 		e, close, m := setupMock(t)
 		defer close()
 
+		m.EXPECT().GetCustomer(context.Background(), gomock.Eq("1")).Return(forceNewCustomer(
+			"1",
+			"山田 太郎",
+			"東京都練馬区豊玉北2-13-1",
+			"176-0013",
+			"03-1234-5678",
+			"個人",
+			"日本",
+			time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+			1,
+		), nil)
 		m.EXPECT().DeleteCustomer(gomock.Any(), "1")
 		res := testutil.DELETE(e, "/customer/1")
 		assert.Equal(t, http.StatusOK, res.Result().StatusCode)
@@ -27,6 +40,17 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 		e, close, m := setupMock(t)
 		defer close()
 
+		m.EXPECT().GetCustomer(context.Background(), gomock.Eq("1")).Return(forceNewCustomer(
+			"1",
+			"山田 太郎",
+			"東京都練馬区豊玉北2-13-1",
+			"176-0013",
+			"03-1234-5678",
+			"個人",
+			"日本",
+			time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+			1,
+		), nil)
 		m.EXPECT().DeleteCustomer(gomock.Any(), "1").Return(repository.ErrCustomerNotFound)
 		res := testutil.DELETE(e, "/customer/1")
 		assert.Equal(t, http.StatusNotFound, res.Result().StatusCode)
@@ -35,6 +59,17 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 		e, close, m := setupMock(t)
 		defer close()
 
+		m.EXPECT().GetCustomer(context.Background(), gomock.Eq("1")).Return(forceNewCustomer(
+			"1",
+			"山田 太郎",
+			"東京都練馬区豊玉北2-13-1",
+			"176-0013",
+			"03-1234-5678",
+			"個人",
+			"日本",
+			time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC),
+			1,
+		), nil)
 		m.EXPECT().DeleteCustomer(gomock.Any(), "1").Return(errors.New("some error"))
 		res := testutil.DELETE(e, "/customer/1")
 		assert.Equal(t, http.StatusInternalServerError, res.Result().StatusCode)
