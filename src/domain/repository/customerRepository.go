@@ -16,6 +16,6 @@ type CustomerRepository interface {
 }
 
 var (
-	ErrCustomerNotFound = errors.New("CUSTOMER NOT FOUND")
+	ErrCustomerNotFound = errors.New("CUSTOMER NOT FOUND") //for GetCustomer
 	ErrConflict         = errors.New("Conflict")
 )

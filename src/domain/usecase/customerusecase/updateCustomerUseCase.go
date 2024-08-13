@@ -19,7 +19,11 @@ func NewUpdateCustomerUseCase(repository repository.CustomerRepository) *UpdateC
 }
 
 func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, id string, input UpdateCustomerUseCaseInput) (*entity.Customer, error) {
-	customer, err := entity.NewCustomer(
+	currentCustomer, err := uc.repository.GetCustomer(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	customer, err := currentCustomer.ChangeInfo(
 		id,
 		input.Name,
 		input.Address,
