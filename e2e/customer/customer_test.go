@@ -60,6 +60,12 @@ func TestCustomerUpdate(t *testing.T) {
 		assert.Equal(t, http.StatusOK, statusCode)
 		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerUpdate/put_customer_response.customassertion.json", resGetJson)
 	})
+	t.Run("infra return specific error", func(t *testing.T) {
+		t.Run("ErrCustomerNotFound", func(t *testing.T) {
+			statusCode, _ := put(t, url("/customer/", "notexists"), "../../fixture/e2e/TestCustomerUpdate/put_customer_request.json")
+			assert.Equal(t, http.StatusNotFound, statusCode)
+		})
+	})
 }
 
 func TestCustomerDelete(t *testing.T) {
