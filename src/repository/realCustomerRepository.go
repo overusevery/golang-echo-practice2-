@@ -151,18 +151,9 @@ func (r *RealCustomerRepository) UpdateCustomer(ctx context.Context, customer en
 
 func (r *RealCustomerRepository) DeleteCustomer(ctx context.Context, id string) error {
 	return RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
-		result, err := tx.ExecContext(ctx, `DELETE FROM customers WHERE id = $1`, id)
+		_, err := tx.ExecContext(ctx, `DELETE FROM customers WHERE id = $1`, id)
 		if err != nil {
 			return err
-		}
-
-		n, err := result.RowsAffected()
-		if err != nil {
-			return err
-		}
-
-		if n == 0 {
-			return repository.ErrCustomerNotFound
 		}
 		return nil
 	})
