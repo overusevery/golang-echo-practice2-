@@ -1,11 +1,12 @@
 package entity
 
 import (
-	"errors"
 	"fmt"
+
+	"github.com/overusevery/golang-echo-practice2/src/shared/message"
 )
 
-var ErrInvalidVersion = errors.New("version must be > 0")
+var ErrInvalidVersion = message.ERRID00004
 
 type Aggregate struct {
 	version int

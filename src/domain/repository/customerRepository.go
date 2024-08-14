@@ -2,10 +2,10 @@ package repository
 
 import (
 	"context"
-	"errors"
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/value"
+	"github.com/overusevery/golang-echo-practice2/src/shared/message"
 )
 
 //go:generate mockgen -source=customerRepository.go -destination=../../repository/mock/mockCustomerRepository.go
@@ -17,6 +17,6 @@ type CustomerRepository interface {
 }
 
 var (
-	ErrCustomerNotFound = errors.New("CUSTOMER NOT FOUND") //for GetCustomer
-	ErrConflict         = errors.New("Conflict")
+	ErrCustomerNotFound = message.ERRID00005 //for GetCustomer
+	ErrConflict         = message.ERRID00006
 )

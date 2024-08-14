@@ -7,10 +7,11 @@ import (
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
+	"github.com/overusevery/golang-echo-practice2/src/shared/message"
 )
 
 var (
-	ErrInvalidInputCreateCustomerUseCase = errors.New("input value is invalid for Create Customer")
+	ErrInvalidInputCreateCustomerUseCase = message.ERRID00006
 )
 
 type CreateCustomerUseCaseInput struct {
