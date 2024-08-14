@@ -8,6 +8,7 @@ import (
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
+	"github.com/overusevery/golang-echo-practice2/src/domain/value"
 )
 
 type RealCustomerRepository struct {
@@ -20,7 +21,7 @@ func NewRealCustomerRepository(db *sql.DB) *RealCustomerRepository {
 	}
 }
 
-func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id string) (*entity.Customer, error) {
+func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id value.ID) (*entity.Customer, error) {
 	var entityCustomer *entity.Customer
 	errTranscation := RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
 		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate, version FROM customers WHERE id = $1`, id)

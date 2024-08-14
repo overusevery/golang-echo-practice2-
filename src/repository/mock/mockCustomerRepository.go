@@ -14,6 +14,7 @@ import (
 	reflect "reflect"
 
 	entity "github.com/overusevery/golang-echo-practice2/src/domain/entity"
+	value "github.com/overusevery/golang-echo-practice2/src/domain/value"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -70,7 +71,7 @@ func (mr *MockCustomerRepositoryMockRecorder) DeleteCustomer(ctx, customer any) 
 }
 
 // GetCustomer mocks base method.
-func (m *MockCustomerRepository) GetCustomer(ctx context.Context, id string) (*entity.Customer, error) {
+func (m *MockCustomerRepository) GetCustomer(ctx context.Context, id value.ID) (*entity.Customer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCustomer", ctx, id)
 	ret0, _ := ret[0].(*entity.Customer)
