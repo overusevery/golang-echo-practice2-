@@ -17,10 +17,16 @@ func NewDeleteCustomerUseCase(repository repository.CustomerRepository) *DeleteC
 }
 
 func (uc *DeleteCustomerUseCase) Execute(ctx context.Context, id string) error {
-	_, err := uc.repository.GetCustomer(ctx, id)
+	customer, err := uc.repository.GetCustomer(ctx, id)
 	if err != nil {
 		return err
 	}
-	err = uc.repository.DeleteCustomer(ctx, id)
+
+	deletedCustomer, err := customer.Delete()
+	if err != nil {
+		return err
+	}
+
+	err = uc.repository.DeleteCustomer(ctx, *deletedCustomer)
 	return err
 }

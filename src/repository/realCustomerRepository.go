@@ -149,9 +149,9 @@ func (r *RealCustomerRepository) UpdateCustomer(ctx context.Context, customer en
 	return entityCustomer, errRun
 }
 
-func (r *RealCustomerRepository) DeleteCustomer(ctx context.Context, id string) error {
+func (r *RealCustomerRepository) DeleteCustomer(ctx context.Context, customer entity.DeletedCustomer) error {
 	return RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
-		_, err := tx.ExecContext(ctx, `DELETE FROM customers WHERE id = $1`, id)
+		_, err := tx.ExecContext(ctx, `DELETE FROM customers WHERE id = $1`, customer.ID)
 		if err != nil {
 			return err
 		}

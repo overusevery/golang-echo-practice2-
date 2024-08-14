@@ -12,7 +12,7 @@ type CustomerRepository interface {
 	GetCustomer(ctx context.Context, id string) (*entity.Customer, error)
 	CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error)
 	UpdateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error)
-	DeleteCustomer(ctx context.Context, id string) error
+	DeleteCustomer(ctx context.Context, customer entity.DeletedCustomer) error
 }
 
 var (

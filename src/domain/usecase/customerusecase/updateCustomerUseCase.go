@@ -24,7 +24,6 @@ func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, id string, input U
 		return nil, err
 	}
 	customer, err := currentCustomer.ChangeInfo(
-		id,
 		input.Name,
 		input.Address,
 		input.ZIP,
@@ -32,7 +31,6 @@ func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, id string, input U
 		input.MarketSegment,
 		input.Nation,
 		input.Birthdate,
-		input.Version,
 	)
 	if err != nil {
 		return nil, err

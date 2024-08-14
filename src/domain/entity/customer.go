@@ -44,6 +44,13 @@ func NewCustomerNotRegistered(name, address, zip, phone, marketSegment, nation s
 	return c, err
 }
 
-func (c Customer) ChangeInfo(id string, name, address, zip, phone, marketSegment, nation string, birthdate time.Time, version int) (*Customer, error) {
-	return NewCustomer(id, name, address, zip, phone, marketSegment, nation, birthdate, version)
+func (c Customer) ChangeInfo(name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, error) {
+	return NewCustomer(string(c.ID), name, address, zip, phone, marketSegment, nation, birthdate, c.GetVersion())
+}
+
+type DeletedCustomer Customer
+
+func (c Customer) Delete() (*DeletedCustomer, error) {
+	d := DeletedCustomer(c)
+	return &d, nil
 }
