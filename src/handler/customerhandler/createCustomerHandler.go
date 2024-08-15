@@ -27,16 +27,18 @@ func (h *CreateCustomerHandler) CreateCustomer(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, convertToCreateCustomerErrorResponse(err))
 	}
-
-	createdCustomer, err := h.CreateCustomerUseCase.Execute(c.Request().Context(), customerusecase.CreateCustomerUseCaseInput{
-		Name:          req.Name,
-		Address:       req.Address,
-		ZIP:           req.Zip,
-		Phone:         req.Phone,
-		MarketSegment: req.Mktsegment,
-		Nation:        req.Nation,
-		Birthdate:     req.Birthdate,
-	})
+	createdCustomer, err := h.CreateCustomerUseCase.Execute(
+		c.Request().Context(),
+		customerusecase.CreateCustomerUseCaseInput{
+			Name:          req.Name,
+			Address:       req.Address,
+			ZIP:           req.Zip,
+			Phone:         req.Phone,
+			MarketSegment: req.Mktsegment,
+			Nation:        req.Nation,
+			Birthdate:     req.Birthdate,
+		},
+	)
 	if err != nil {
 		switch {
 		case errors.Is(err, customerusecase.ErrInvalidInputCreateCustomerUseCase):

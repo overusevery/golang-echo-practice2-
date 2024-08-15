@@ -1,12 +1,32 @@
 linters:
   enable:
-    - errorlint
-    - exhaustruct
+    - errorlint # force errors.Is,As  than err == ErrSomething
+    - exhaustruct # Checks if all structure fields are initialized.
+    - godox # find TODO comment
+    - gofmt # checks whether code was gofmt-ed
+    - gocyclo # check complexity of code
+    - gosec  # Detects security problems
+    - nilerr        # Detects code that returns nil even if it checks that the error is not nil.
+    - lll # Reports long lines.
+    - bodyclose 
+    - forbidigo # forbid specific method, varibale,...
+
+
+
 linters-settings:
   exhaustruct:
     include:
-      # parameter object XXXInput for usecase should be filled
+      # parameter object XXXInput(or this is often called command) for usecase should be filled
       - "github.com/overusevery/golang-echo-practice2/src/domain/usecase/.*..*Input"
+  godox:
+    keywords:
+      - TODO
+  gocyclo:
+    # Minimal code complexity to report.10 is recommended value
+    min-complexity: 10
+  forbidigo:
+    forbid:
+      - fmt\.Print.*
 issues:
   exclude-files:
     - ".*test.go$"
