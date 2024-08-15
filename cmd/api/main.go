@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -66,7 +67,8 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	go func() {
-		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		err := server.ListenAndServe()
+		if errors.Is(err, http.ErrServerClosed) {
 			log.Fatal(err)
 		}
 	}()

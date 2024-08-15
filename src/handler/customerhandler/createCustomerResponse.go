@@ -19,7 +19,7 @@ func convertToCreateCustomerErrorResponse(err error) CreateCustomerMultiErrorRes
 	var errList *util.ValidationErrorList
 	if errors.As(err, &errList) {
 		for _, err := range errList.Unwrap() {
-			if customErr, ok := err.(*message.ErrorWithId); ok {
+			if customErr, ok := err.(*message.ErrorWithId); ok { //nolint:errorlint
 				messages = append(messages,
 					openapi.ErrorElement{
 						Id:  customErr.ErrorID(),

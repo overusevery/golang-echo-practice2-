@@ -1,6 +1,6 @@
 linters:
   enable:
-    - staticcheck
+    - errorlint
 issues:
   exclude-files:
     - ".*test.go$"
