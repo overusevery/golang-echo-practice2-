@@ -20,7 +20,11 @@ type Customer struct {
 	Birthdate     value.Birthdate
 }
 
-func NewCustomer(id string, name, address, zip, phone, marketSegment, nation string, birthdate time.Time, version int) (*Customer, error) {
+func NewCustomer(
+	id, name, address, zip, phone, marketSegment, nation string,
+	birthdate time.Time,
+	version int,
+) (*Customer, error) {
 	errList := []error{}
 	c := &Customer{
 		ID:            value.NewID(id),
@@ -29,9 +33,11 @@ func NewCustomer(id string, name, address, zip, phone, marketSegment, nation str
 		ZIP:           zip,
 		Phone:         phone,
 		MarketSegment: marketSegment,
-		Birthdate:     entityutil.WrapNew(value.NewBirthdate, &errList)(value.NewBirthdateInput{T: birthdate, Now: time.Now()}),
-		Nation:        entityutil.WrapNew(value.NewNation, &errList)(nation),
-		Aggregate:     entityutil.WrapNew(NewAggregate, &errList)(version),
+		Birthdate: entityutil.WrapNew(value.NewBirthdate, &errList)(
+			value.NewBirthdateInput{T: birthdate, Now: time.Now()},
+		),
+		Nation:    entityutil.WrapNew(value.NewNation, &errList)(nation),
+		Aggregate: entityutil.WrapNew(NewAggregate, &errList)(version),
 	}
 	if len(errList) > 0 {
 		return nil, util.NewValidationErrorList(errList...)
@@ -39,12 +45,18 @@ func NewCustomer(id string, name, address, zip, phone, marketSegment, nation str
 	return c, nil
 }
 
-func NewCustomerNotRegistered(name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, error) {
+func NewCustomerNotRegistered(
+	name, address, zip, phone, marketSegment, nation string,
+	birthdate time.Time,
+) (*Customer, error) {
 	c, err := NewCustomer(value.GenerateNewIDString(), name, address, zip, phone, marketSegment, nation, birthdate, 1)
 	return c, err
 }
 
-func (c Customer) ChangeInfo(name, address, zip, phone, marketSegment, nation string, birthdate time.Time) (*Customer, error) {
+func (c Customer) ChangeInfo(
+	name, address, zip, phone, marketSegment, nation string,
+	birthdate time.Time,
+) (*Customer, error) {
 	return NewCustomer(string(c.ID), name, address, zip, phone, marketSegment, nation, birthdate, c.GetVersion())
 }
 
