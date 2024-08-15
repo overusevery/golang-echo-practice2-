@@ -1,6 +1,13 @@
 linters:
   enable:
     - errorlint
+    - exhaustruct
+linters-settings:
+  exhaustruct:
+    include:
+      # parameter object XXXInput for usecase should be filled
+      - "github.com/overusevery/golang-echo-practice2/src/domain/usecase/.*..*Input"
 issues:
   exclude-files:
     - ".*test.go$"
+
