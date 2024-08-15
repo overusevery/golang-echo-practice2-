@@ -27,7 +27,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=postgres sslmode=disable", config.Host, config.User, config.Password)
+	connStr := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=postgres sslmode=disable",
+		config.Host,
+		config.User,
+		config.Password,
+	)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
