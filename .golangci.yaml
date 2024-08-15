@@ -5,10 +5,10 @@ linters:
     - godox # find TODO comment
     - gofmt # checks whether code was gofmt-ed
     - gocyclo # check complexity of code
-    - gosec  # Detects security problems
-    - nilerr        # Detects code that returns nil even if it checks that the error is not nil.
+    - gosec # Detects security problems
+    - nilerr # Detects code that returns nil even if it checks that the error is not nil.
     - lll # Reports long lines.
-    - bodyclose 
+    - bodyclose # check response body close
     - forbidigo # forbid specific method, varibale,...
 
 
