@@ -33,7 +33,10 @@ func NewCreateCustomerUseCase(repository repository.CustomerRepository) *CreateC
 	}
 }
 
-func (uc *CreateCustomerUseCase) Execute(ctx context.Context, input CreateCustomerUseCaseInput) (*entity.Customer, error) {
+func (uc *CreateCustomerUseCase) Execute(
+	ctx context.Context,
+	input CreateCustomerUseCaseInput,
+) (*entity.Customer, error) {
 	customer, err := entity.NewCustomerNotRegistered(
 		input.Name,
 		input.Address,

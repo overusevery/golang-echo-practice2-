@@ -24,7 +24,7 @@ func NewRealCustomerRepository(db *sql.DB) *RealCustomerRepository {
 func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id value.ID) (*entity.Customer, error) {
 	var entityCustomer *entity.Customer
 	errTranscation := RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
-		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate, version FROM customers WHERE id = $1`, id)
+		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate, version FROM customers WHERE id = $1`, id) //nolint:lll
 		dbCustomer := DBCustomer{}
 		err := row.Scan(&dbCustomer.ID,
 			&dbCustomer.Name,
@@ -53,7 +53,10 @@ func (r *RealCustomerRepository) GetCustomer(ctx context.Context, id value.ID) (
 	return entityCustomer, errTranscation
 }
 
-func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
+func (r *RealCustomerRepository) CreateCustomer(
+	ctx context.Context,
+	customer entity.Customer,
+) (*entity.Customer, error) {
 	var entityCustomer *entity.Customer
 	errRun := RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
 		_, err := tx.ExecContext(ctx,
@@ -73,7 +76,7 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 			return err
 		}
 
-		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate, version FROM customers WHERE id = $1`, customer.ID)
+		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate, version FROM customers WHERE id = $1`, customer.ID) //nolint:lll
 		dbCustomer := DBCustomer{}
 		err = row.Scan(&dbCustomer.ID,
 			&dbCustomer.Name,
@@ -98,11 +101,14 @@ func (r *RealCustomerRepository) CreateCustomer(ctx context.Context, customer en
 	return entityCustomer, errRun
 }
 
-func (r *RealCustomerRepository) UpdateCustomer(ctx context.Context, customer entity.Customer) (*entity.Customer, error) {
+func (r *RealCustomerRepository) UpdateCustomer(
+	ctx context.Context,
+	customer entity.Customer,
+) (*entity.Customer, error) {
 	var entityCustomer *entity.Customer
 	errRun := RunInTransaction(ctx, r.db, func(ctx context.Context, tx *sql.Tx) error {
 		result, err := tx.ExecContext(ctx,
-			`UPDATE customers SET name = $1, address = $2, zip = $3, phone = $4, mktsegment = $5, nation = $6, birthdate = $7, version = $8 WHERE id = $9 and version = $10`,
+			`UPDATE customers SET name = $1, address = $2, zip = $3, phone = $4, mktsegment = $5, nation = $6, birthdate = $7, version = $8 WHERE id = $9 and version = $10`, //nolint:lll
 			customer.Name,
 			customer.Address,
 			customer.ZIP,
@@ -125,7 +131,7 @@ func (r *RealCustomerRepository) UpdateCustomer(ctx context.Context, customer en
 			return repository.ErrConflict
 		}
 
-		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate, version FROM customers WHERE id = $1`, customer.ID)
+		row := tx.QueryRowContext(ctx, `SELECT id, name, address, zip, phone, mktsegment, nation, birthdate, version FROM customers WHERE id = $1`, customer.ID) //nolint:lll
 		dbCustomer := DBCustomer{}
 		err = row.Scan(&dbCustomer.ID,
 			&dbCustomer.Name,
