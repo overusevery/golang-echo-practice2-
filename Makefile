@@ -35,3 +35,7 @@ generateFromOpenApi:
 	--type-mappings=integer=int \
     -o /local/src/handler/openapigenmodel
 	# see:https://openapi-generator.tech/docs/generators/go-server/
+
+.PHONY:lint
+lint:
+	golangci-lint run
