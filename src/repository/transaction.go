@@ -15,7 +15,7 @@ func RunInTransaction(ctx context.Context, db *sql.DB, f func(ctx context.Contex
 	}
 	err = f(ctx, tx)
 	if err != nil {
-		tx.Rollback()
+		tx.Rollback() //nolint:errcheck
 		return err
 	}
 	if err := tx.Commit(); err != nil {

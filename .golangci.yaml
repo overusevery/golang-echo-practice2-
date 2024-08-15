@@ -1,0 +1,6 @@
+linters:
+  enable:
+    - staticcheck
+issues:
+  exclude-files:
+    - ".*test.go$"
