@@ -26,10 +26,10 @@ linters-settings:
     min-complexity: 10
   forbidigo:
     forbid:
-      # example
-      # - dummypkg.dummytype.dummymethodorvar
       - p: errors.New
         msg: use error in shared folder
+      - p: ^fmt\.Print.*$
+        msg: use log.Print
 issues:
   exclude-files:
     - ".*test.go$"

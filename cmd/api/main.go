@@ -22,10 +22,15 @@ import (
 )
 
 func main() {
+	os.Exit(run())
+}
+
+func run() int {
 	var config Config
 	err := envconfig.Process("", &config)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Printf("failed to load config file:%v", err.Error())
+		return 1
 	}
 	connStr := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=postgres sslmode=disable",
@@ -35,14 +40,16 @@ func main() {
 	)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("failed to connect to postgresql:%v", err.Error())
+		return 1
 	}
 
 	pingErr := db.Ping()
 	if pingErr != nil {
-		log.Fatal(pingErr)
+		log.Printf("failed to ping to postgresql:%v", pingErr.Error())
+		return 1
 	}
-	fmt.Println("Connected to DB!")
+	log.Printf("Connected to DB!")
 	// Echo instance
 	e := echo.New()
 
@@ -71,20 +78,28 @@ func main() {
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+
+	serverclosed := make(chan error, 1)
 	go func() {
-		err := server.ListenAndServe()
-		if errors.Is(err, http.ErrServerClosed) {
-			log.Fatal(err)
-		}
+		serverclosed <- server.ListenAndServe()
 	}()
 
-	<-ctx.Done()
-	fmt.Print("graceful shutdown...")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err := e.Shutdown(ctx); err != nil {
-		log.Fatal(err)
+	select {
+	case err := <-serverclosed:
+		if !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("server is closed by error:%v", err.Error())
+			return 1
+		}
+	case <-ctx.Done():
+		log.Printf("graceful shutdown...")
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		if err := e.Shutdown(ctx); err != nil {
+			log.Print("failed to shutdown")
+			return 1
+		}
 	}
+	return 0
 }
 
 type Config struct {
