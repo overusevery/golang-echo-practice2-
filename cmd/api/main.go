@@ -56,6 +56,7 @@ func run() int {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	// e.Use(customemiddleware.ParseAuthorizationToken)
 
 	// Routes
 	r := repository.NewRealCustomerRepository(db)

@@ -21,6 +21,7 @@ func NewGetCustomrHandler(getCustomerUseCase *customerusecase.GetCustomerUseCase
 
 func (h *CustomerHandler) RegisterRouter(e *echo.Echo) {
 	e.GET("/customer/:id", h.GetCustomer)
+	// e.GET("/customer/:id", Access(h.GetCustomer))
 }
 
 func (h *CustomerHandler) GetCustomer(c echo.Context) error {
@@ -44,3 +45,12 @@ func (h *CustomerHandler) GetCustomer(c echo.Context) error {
 	res := convertFrom(*customer)
 	return c.JSON(http.StatusOK, res)
 }
+
+// func Access(next echo.HandlerFunc) echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+// 		token := c.Get("token").(string)
+// 		log.Print("hogetoken")
+// 		log.Print(token)
+// 		return next(c)
+// 	}
+// }

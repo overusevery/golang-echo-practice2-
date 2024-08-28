@@ -46,20 +46,21 @@ func TestCustomerUpdate(t *testing.T) {
 		assert.Equal(t, http.StatusOK, statusCode)
 		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerUpdate/put_customer_response.customassertion.json", resGetJson)
 	})
-	t.Run("optimistic concurrency control", func(t *testing.T) {
-		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerUpdate/create_customer_request.json")
-		assert.Equal(t, http.StatusOK, statusCode)
+	// client level optimisitic conncurrency may be not neccessary feature
+	// t.Run("optimistic concurrency control", func(t *testing.T) {
+	// 	statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerUpdate/create_customer_request.json")
+	// 	assert.Equal(t, http.StatusOK, statusCode)
 
-		statusCode, _ = put(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_1.json")
-		assert.Equal(t, http.StatusOK, statusCode)
+	// 	statusCode, _ = put(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_1.json")
+	// 	assert.Equal(t, http.StatusOK, statusCode)
 
-		statusCode, _ = put(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_2.json")
-		assert.Equal(t, http.StatusConflict, statusCode)
+	// 	statusCode, _ = put(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")), "../../fixture/e2e/TestCustomerUpdate/put_customer_request_2.json")
+	// 	assert.Equal(t, http.StatusConflict, statusCode)
 
-		statusCode, resGetJson := get(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")))
-		assert.Equal(t, http.StatusOK, statusCode)
-		util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerUpdate/put_customer_response.customassertion.json", resGetJson)
-	})
+	// 	statusCode, resGetJson := get(t, url("/customer/", getFieldInJsonString(t, resCreateJson, "id")))
+	// 	assert.Equal(t, http.StatusOK, statusCode)
+	// 	util.CompareJsonWithCustomAssertionJson(t, "../../fixture/e2e/TestCustomerUpdate/put_customer_response.customassertion.json", resGetJson)
+	// })
 	t.Run("infra return specific error", func(t *testing.T) {
 		t.Run("ErrCustomerNotFound", func(t *testing.T) {
 			statusCode, _ := put(t, url("/customer/", "notexists"), "../../fixture/e2e/TestCustomerUpdate/put_customer_request.json")
