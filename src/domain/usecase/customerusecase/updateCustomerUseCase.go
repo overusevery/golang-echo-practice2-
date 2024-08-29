@@ -2,10 +2,12 @@ package customerusecase
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
+	accesscontrol "github.com/overusevery/golang-echo-practice2/src/domain/usecase/accessControl"
 	"github.com/overusevery/golang-echo-practice2/src/domain/value"
 )
 
@@ -20,6 +22,17 @@ func NewUpdateCustomerUseCase(repository repository.CustomerRepository) *UpdateC
 }
 
 func (uc *UpdateCustomerUseCase) Execute(
+	ctx context.Context,
+	id string,
+	input UpdateCustomerUseCaseInput,
+) (*entity.Customer, error) {
+	if accesscontrol.New("mybackendapi/editcustomer").IsNotAllowed(ctx) {
+		return nil, errors.New("not enough scope")
+	}
+	return uc.execute(ctx, id, input)
+}
+
+func (uc *UpdateCustomerUseCase) execute(
 	ctx context.Context,
 	id string,
 	input UpdateCustomerUseCaseInput,

@@ -7,6 +7,7 @@ import (
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
+	accesscontrol "github.com/overusevery/golang-echo-practice2/src/domain/usecase/accessControl"
 	"github.com/overusevery/golang-echo-practice2/src/shared/message"
 )
 
@@ -34,6 +35,16 @@ func NewCreateCustomerUseCase(repository repository.CustomerRepository) *CreateC
 }
 
 func (uc *CreateCustomerUseCase) Execute(
+	ctx context.Context,
+	input CreateCustomerUseCaseInput,
+) (*entity.Customer, error) {
+	if accesscontrol.New("mybackendapi/editcustomer").IsNotAllowed(ctx) {
+		return nil, errors.New("not enough scope")
+	}
+	return uc.execute(ctx, input)
+}
+
+func (uc *CreateCustomerUseCase) execute(
 	ctx context.Context,
 	input CreateCustomerUseCaseInput,
 ) (*entity.Customer, error) {

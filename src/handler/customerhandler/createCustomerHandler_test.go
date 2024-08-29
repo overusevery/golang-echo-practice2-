@@ -1,7 +1,6 @@
 package customerhandler
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -12,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
+	"github.com/overusevery/golang-echo-practice2/src/handler/customemiddleware"
 	mock_repository "github.com/overusevery/golang-echo-practice2/src/repository/mock"
 	"github.com/overusevery/golang-echo-practice2/testutil"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +22,7 @@ func TestCreateCustomer(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		setupCreateCustomerHandlerWithMock(t,
 			func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-				m.EXPECT().CreateCustomer(context.Background(), CustomerMatcherButID{expected: *forceNewCustomer(
+				m.EXPECT().CreateCustomer(gomock.Any(), CustomerMatcherButID{expected: *forceNewCustomer(
 					"0",
 					"山田 太郎",
 					"東京都練馬区豊玉北2-13-1",
@@ -130,6 +130,7 @@ func TestCreateCustomer(t *testing.T) {
 
 func setupCreateCustomerHandlerWithMock(t *testing.T, testFun func(m *mock_repository.MockCustomerRepository, e *echo.Echo)) {
 	e := echo.New()
+	e.Use(customemiddleware.ParseAuthorizationToken)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	m := mock_repository.NewMockCustomerRepository(ctrl)

@@ -44,13 +44,3 @@ func (h *CustomerHandler) GetCustomer(c echo.Context) error {
 	res := convertFrom(*customer)
 	return c.JSON(http.StatusOK, res)
 }
-
-//TODO
-// func Access(next echo.HandlerFunc) echo.HandlerFunc {
-// 	return func(c echo.Context) error {
-// 		token := c.Get("token").(string)
-// 		log.Print("hogetoken")
-// 		log.Print(token)
-// 		return next(c)
-// 	}
-// }

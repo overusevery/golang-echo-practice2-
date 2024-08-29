@@ -1,7 +1,6 @@
 package customerhandler
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -12,6 +11,7 @@ import (
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 	"github.com/overusevery/golang-echo-practice2/src/domain/value"
+	"github.com/overusevery/golang-echo-practice2/src/handler/customemiddleware"
 	mock_repository "github.com/overusevery/golang-echo-practice2/src/repository/mock"
 	"github.com/overusevery/golang-echo-practice2/testutil"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +23,7 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 		e, close, m := setupMock(t)
 		defer close()
 
-		m.EXPECT().GetCustomer(context.Background(), gomock.Eq(value.NewID("1"))).Return(forceNewCustomer(
+		m.EXPECT().GetCustomer(gomock.Any(), gomock.Eq(value.NewID("1"))).Return(forceNewCustomer(
 			"1",
 			"山田 太郎",
 			"東京都練馬区豊玉北2-13-1",
@@ -53,7 +53,7 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 		e, close, m := setupMock(t)
 		defer close()
 
-		m.EXPECT().GetCustomer(context.Background(), gomock.Eq(value.NewID("1"))).Return(nil, repository.ErrCustomerNotFound)
+		m.EXPECT().GetCustomer(gomock.Any(), gomock.Eq(value.NewID("1"))).Return(nil, repository.ErrCustomerNotFound)
 		res := testutil.DELETE(e, "/customer/1")
 		assert.Equal(t, http.StatusNotFound, res.Result().StatusCode)
 	})
@@ -61,7 +61,7 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 		e, close, m := setupMock(t)
 		defer close()
 
-		m.EXPECT().GetCustomer(context.Background(), gomock.Eq(value.NewID("1"))).Return(forceNewCustomer(
+		m.EXPECT().GetCustomer(gomock.Any(), gomock.Eq(value.NewID("1"))).Return(forceNewCustomer(
 			"1",
 			"山田 太郎",
 			"東京都練馬区豊玉北2-13-1",
@@ -80,6 +80,7 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 
 func setupMock(t *testing.T) (*echo.Echo, func(), *mock_repository.MockCustomerRepository) {
 	e := echo.New()
+	e.Use(customemiddleware.ParseAuthorizationToken)
 	ctrl := gomock.NewController(t)
 	close := func() {
 		ctrl.Finish()
