@@ -98,8 +98,26 @@ func TestGetCustomer(t *testing.T) {
 	})
 }
 
+// Data
+//
+//	{
+//		"sub": "11111111-1111-1111-1111-111111111111",
+//		"iss": "someiss",
+//		"client_id": "someclient_id",
+//		"scope": "mybackendapi/getcustomer mybackendapi/editcustomer",
+//		"exp": 1824767332,
+//		"iat": 1724763732,
+//		"jti": "22222222-2222-2222-2222-222222222222"
+//	}
+var authToken = "Bearer eyJraWQiOiJzb21la2lkIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiIxMTExMTExMS0xMTExLTExMTEtMTExMS0xMTExMTExMTExMTEiLCJpc3MiOiJzb21laXNzIiwiY2xpZW50X2lkIjoic29tZWNsaWVudF9pZCIsInNjb3BlIjoibXliYWNrZW5kYXBpL2dldGN1c3RvbWVyIG15YmFja2VuZGFwaS9lZGl0Y3VzdG9tZXIiLCJleHAiOjE4MjQ3NjczMzIsImlhdCI6MTcyNDc2MzczMiwianRpIjoiMjIyMjIyMjItMjIyMi0yMjIyLTIyMjItMjIyMjIyMjIyMjIyIn0.AUPdh5v9fvna4U8NiRKK5aq4AgFzwu1WAMwKC7FSiCY" //nolint:gosec,lll, this is just example dummy token
+
 func get(t *testing.T, url string) (int, string) {
-	resGet, err := http.Get(url)
+	client := &http.Client{}
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", authToken)
+	resGet, err := client.Do(req)
+
 	require.NoError(t, err)
 	defer resGet.Body.Close()
 
@@ -112,7 +130,12 @@ func post(t *testing.T, url string, jsonPath string) (int, string) {
 	request, err := os.ReadFile(jsonPath)
 	require.NoError(t, err)
 
-	resCreate, err := http.Post(url, "application/json", bytes.NewBuffer(request))
+	client := &http.Client{}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(request))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", authToken)
+	resCreate, err := client.Do(req)
+
 	require.NoError(t, err)
 	defer resCreate.Body.Close()
 
@@ -129,6 +152,7 @@ func put(t *testing.T, url string, jsonPath string) (int, string) {
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(request))
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", authToken)
 	require.NoError(t, err)
 	resUpdate, err := client.Do(req)
 
@@ -144,6 +168,7 @@ func put(t *testing.T, url string, jsonPath string) (int, string) {
 func delete(t *testing.T, url string) (int, string) {
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodDelete, url, nil)
+	req.Header.Set("Authorization", authToken)
 	require.NoError(t, err)
 	resUpdate, err := client.Do(req)
 

@@ -1,7 +1,6 @@
 package customerhandler
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -11,6 +10,7 @@ import (
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 	"github.com/overusevery/golang-echo-practice2/src/domain/value"
+	"github.com/overusevery/golang-echo-practice2/src/handler/customemiddleware"
 	mock_repository "github.com/overusevery/golang-echo-practice2/src/repository/mock"
 	"github.com/overusevery/golang-echo-practice2/testutil"
 	"github.com/stretchr/testify/assert"
@@ -20,7 +20,7 @@ import (
 func TestGetCustomer(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-			m.EXPECT().GetCustomer(context.Background(), gomock.Eq(value.NewID("1"))).Return(forceNewCustomer(
+			m.EXPECT().GetCustomer(gomock.Any(), gomock.Eq(value.NewID("1"))).Return(forceNewCustomer(
 				"1",
 				"山田 太郎",
 				"東京都練馬区豊玉北2-13-1",
@@ -39,7 +39,7 @@ func TestGetCustomer(t *testing.T) {
 	})
 	t.Run("not found", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
-			m.EXPECT().GetCustomer(context.Background(), gomock.Eq(value.NewID("1"))).Return(nil, repository.ErrCustomerNotFound)
+			m.EXPECT().GetCustomer(gomock.Any(), gomock.Eq(value.NewID("1"))).Return(nil, repository.ErrCustomerNotFound)
 
 			res := testutil.GET(e, "/customer/1")
 
@@ -55,6 +55,14 @@ func TestGetCustomer(t *testing.T) {
 		// 	assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
 		// })
 	})
+	t.Run("unauthorized", func(t *testing.T) {
+		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
+
+			res := testutil.GET(e, "/customer/1", testutil.WithAuthToken(testutil.AuthTokenScopeUnmatch))
+
+			assert.Equal(t, http.StatusUnauthorized, res.Result().StatusCode)
+		})
+	})
 	t.Run("internal server error", func(t *testing.T) {
 		setupGetCustomerHandlerWithMock(t, func(m *mock_repository.MockCustomerRepository, e *echo.Echo) {
 			m.EXPECT().GetCustomer(gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
@@ -69,6 +77,7 @@ func TestGetCustomer(t *testing.T) {
 
 func setupGetCustomerHandlerWithMock(t *testing.T, testFun func(m *mock_repository.MockCustomerRepository, e *echo.Echo)) {
 	e := echo.New()
+	e.Use(customemiddleware.ParseAuthorizationToken)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	m := mock_repository.NewMockCustomerRepository(ctrl)
