@@ -67,8 +67,8 @@ func TestParseAuthorizationToken(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, res.Code)
 		assert.Equal(t, hw, res.Body.Bytes())
-		assert.Equal(t, "11111111-1111-1111-1111-111111111111", recievedContext.Get("user_id"))
-		assert.Equal(t, []string{"mybackendapi/my_scope_name"}, recievedContext.Get("scope"))
+		assert.Equal(t, "11111111-1111-1111-1111-111111111111", extract(recievedContext, "user_id"))
+		assert.Equal(t, []string{"mybackendapi/my_scope_name"}, extract(recievedContext, "scope"))
 	})
 
 	t.Run("multi scope", func(t *testing.T) {
@@ -92,8 +92,8 @@ func TestParseAuthorizationToken(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, res.Code)
 		assert.Equal(t, hw, res.Body.Bytes())
-		assert.Equal(t, "11111111-1111-1111-1111-111111111111", recievedContext.Get(USER_ID))
-		assert.Equal(t, []string{"mybackendapi/A", "mybackendapi/B"}, recievedContext.Get(SCOPE))
+		assert.Equal(t, "11111111-1111-1111-1111-111111111111", extract(recievedContext, USER_ID))
+		assert.Equal(t, []string{"mybackendapi/A", "mybackendapi/B"}, extract(recievedContext, SCOPE))
 	})
 	t.Run("request without access token is invalid", func(t *testing.T) {
 		e := echo.New()
@@ -192,4 +192,8 @@ func TestParseAuthorizationToken(t *testing.T) {
 		assert.NotEqual(t, hw, res.Body.Bytes())
 		assert.Equal(t, nil, recievedContext)
 	})
+}
+
+func extract(ctx echo.Context, key string) interface{} {
+	return ctx.Request().Context().Value(key)
 }

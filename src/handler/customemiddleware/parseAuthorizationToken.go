@@ -1,6 +1,7 @@
 package customemiddleware
 
 import (
+	"context"
 	"net/http"
 	"strings"
 
@@ -24,10 +25,13 @@ func ParseAuthorizationToken(next echo.HandlerFunc) echo.HandlerFunc {
 			})
 		}
 
-		c.Set(USER_ID, claims.Subject)
-		c.Set(SCOPE, strings.Fields(claims.Scope))
+		setValueToContext(c, USER_ID, claims.Subject)
+		setValueToContext(c, SCOPE, strings.Fields(claims.Scope))
 		return next(c)
 	}
+}
+func setValueToContext(c echo.Context, key string, value any) {
+	c.SetRequest(c.Request().WithContext(context.WithValue(c.Request().Context(), key, value)))
 }
 
 func parseAuthorizationToken(c echo.Context) (*CustomClaims, bool) {
