@@ -166,7 +166,7 @@ components:
           format: date-time
           example: 1980-01-01T00:00:00Z
         version:
-          type: int
+          type: integer
           example: 1
     CustomerWithoudID:
       type: object
@@ -194,7 +194,7 @@ components:
           format: date-time
           example: 1980-01-01T00:00:00Z
         version:
-          type: int
+          type: integer
           example: 1
     SuccessMessage:
       type: object
@@ -227,6 +227,11 @@ components:
         msg:
           type: string
           example: "birthdate is too old"
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 servers:
   - url: http://localhost:1323/
     description: Localhost Server
