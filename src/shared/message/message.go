@@ -8,12 +8,14 @@ var (
 	ERRID00005 = New("ERRID00005", DATA_NOT_FOUND, "CUSTOMER NOT FOUND")
 	ERRID00006 = New("ERRID00006", CONFLICT, "Conflict")
 	ERRID00007 = New("ERRID00007", INVALID_INPUT, "input value is invalid for Create Customer")
+	ERRID00008 = New("ERRID00008", UNAUTHORIZED, "not enough scope")
 )
 
 const (
 	DATA_NOT_FOUND = iota
 	INVALID_INPUT
 	CONFLICT
+	UNAUTHORIZED
 )
 
 type ErrorWithId struct {

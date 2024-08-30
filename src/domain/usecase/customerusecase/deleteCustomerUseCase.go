@@ -2,7 +2,6 @@ package customerusecase
 
 import (
 	"context"
-	"errors"
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
 	accesscontrol "github.com/overusevery/golang-echo-practice2/src/domain/usecase/accessControl"
@@ -21,7 +20,7 @@ func NewDeleteCustomerUseCase(repository repository.CustomerRepository) *DeleteC
 
 func (uc *DeleteCustomerUseCase) Execute(ctx context.Context, id string) error {
 	if accesscontrol.New("mybackendapi/editcustomer").IsNotAllowed(ctx) {
-		return errors.New("not enough scope")
+		return accesscontrol.ErrNotEnoughScope
 	}
 	return uc.execute(ctx, id)
 }

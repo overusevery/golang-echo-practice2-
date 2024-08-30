@@ -2,7 +2,6 @@ package customerusecase
 
 import (
 	"context"
-	"errors"
 
 	"github.com/overusevery/golang-echo-practice2/src/domain/entity"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
@@ -22,7 +21,7 @@ func NewGetCustomerUseCase(repository repository.CustomerRepository) *GetCustome
 
 func (uc *GetCustomerUseCase) Execute(ctx context.Context, id string) (*entity.Customer, error) {
 	if accesscontrol.New("mybackendapi/getcustomer").IsNotAllowed(ctx) {
-		return nil, errors.New("not enough scope")
+		return nil, accesscontrol.ErrNotEnoughScope
 	}
 	return uc.execute(ctx, id)
 }

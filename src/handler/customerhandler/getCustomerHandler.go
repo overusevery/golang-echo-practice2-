@@ -7,6 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/overusevery/golang-echo-practice2/src/domain/repository"
+	accesscontrol "github.com/overusevery/golang-echo-practice2/src/domain/usecase/accessControl"
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 	"golang.org/x/exp/slog"
 )
@@ -29,6 +30,10 @@ func (h *CustomerHandler) GetCustomer(c echo.Context) error {
 	customer, err := h.GetCustomerUseCase.Execute(c.Request().Context(), id)
 	if err != nil {
 		switch {
+		case errors.Is(err, accesscontrol.ErrNotEnoughScope):
+			return c.JSON(http.StatusUnauthorized, CreateCustomerErrorResponse{
+				Message: "access token lacks needed scope",
+			})
 		case errors.Is(err, repository.ErrCustomerNotFound):
 			return c.JSON(http.StatusNotFound, GetCustomerErrorResponse{
 				Message: fmt.Sprintf("Customer (id = %v) is not found", id),

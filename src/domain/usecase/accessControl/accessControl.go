@@ -1,6 +1,14 @@
 package accesscontrol
 
-import "context"
+import (
+	"context"
+
+	"github.com/overusevery/golang-echo-practice2/src/shared/message"
+)
+
+var (
+	ErrNotEnoughScope = message.ERRID00008
+)
 
 type AccessControl struct {
 	allowlist []string

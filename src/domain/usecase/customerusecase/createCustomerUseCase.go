@@ -39,7 +39,7 @@ func (uc *CreateCustomerUseCase) Execute(
 	input CreateCustomerUseCaseInput,
 ) (*entity.Customer, error) {
 	if accesscontrol.New("mybackendapi/editcustomer").IsNotAllowed(ctx) {
-		return nil, errors.New("not enough scope")
+		return nil, accesscontrol.ErrNotEnoughScope
 	}
 	return uc.execute(ctx, input)
 }
