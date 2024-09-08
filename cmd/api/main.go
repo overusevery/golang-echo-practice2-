@@ -34,8 +34,9 @@ func run() int {
 		return 1
 	}
 	connStr := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=postgres sslmode=disable",
+		"host=%s port=%s user=%s password=%s dbname=postgres sslmode=disable",
 		config.Host,
+		config.Port,
 		config.User,
 		config.Password,
 	)
@@ -106,6 +107,7 @@ func run() int {
 
 type Config struct {
 	Host     string
+	Port     string
 	User     string
 	Password string
 }

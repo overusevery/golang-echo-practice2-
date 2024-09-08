@@ -2,10 +2,14 @@ package e2e
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
+	"syscall"
 	"testing"
 
 	"github.com/overusevery/golang-echo-practice2/e2e/util"
@@ -24,6 +28,10 @@ func url(path ...string) string {
 }
 
 func TestCustomerCreate(t *testing.T) {
+	close := SetupAPIHelper(t)
+	defer func() {
+		close()
+	}()
 	t.Run("standard", func(t *testing.T) {
 		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerCreate/create_customer_request.json")
 		assert.Equal(t, http.StatusOK, statusCode)
@@ -35,6 +43,10 @@ func TestCustomerCreate(t *testing.T) {
 }
 
 func TestCustomerUpdate(t *testing.T) {
+	close := SetupAPIHelper(t)
+	defer func() {
+		close()
+	}()
 	t.Run("standard", func(t *testing.T) {
 		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerUpdate/create_customer_request.json")
 		assert.Equal(t, http.StatusOK, statusCode)
@@ -70,6 +82,10 @@ func TestCustomerUpdate(t *testing.T) {
 }
 
 func TestCustomerDelete(t *testing.T) {
+	close := SetupAPIHelper(t)
+	defer func() {
+		close()
+	}()
 	t.Run("standard", func(t *testing.T) {
 		statusCode, resCreateJson := post(t, url("/customer"), "../../fixture/e2e/TestCustomerDelete/create_customer_request.json")
 		assert.Equal(t, http.StatusOK, statusCode)
@@ -90,6 +106,10 @@ func TestCustomerDelete(t *testing.T) {
 }
 
 func TestGetCustomer(t *testing.T) {
+	close := SetupAPIHelper(t)
+	defer func() {
+		close()
+	}()
 	t.Run("infra return specific error", func(t *testing.T) {
 		t.Run("ErrCustomerNotFound", func(t *testing.T) {
 			statusCode, _ := get(t, url("/customer/", "notexistingid"))
@@ -112,6 +132,7 @@ func TestGetCustomer(t *testing.T) {
 var authToken = "Bearer eyJraWQiOiJzb21la2lkIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiIxMTExMTExMS0xMTExLTExMTEtMTExMS0xMTExMTExMTExMTEiLCJpc3MiOiJzb21laXNzIiwiY2xpZW50X2lkIjoic29tZWNsaWVudF9pZCIsInNjb3BlIjoibXliYWNrZW5kYXBpL2dldGN1c3RvbWVyIG15YmFja2VuZGFwaS9lZGl0Y3VzdG9tZXIiLCJleHAiOjE4MjQ3NjczMzIsImlhdCI6MTcyNDc2MzczMiwianRpIjoiMjIyMjIyMjItMjIyMi0yMjIyLTIyMjItMjIyMjIyMjIyMjIyIn0.AUPdh5v9fvna4U8NiRKK5aq4AgFzwu1WAMwKC7FSiCY" //nolint:gosec,lll, this is just example dummy token
 
 func get(t *testing.T, url string) (int, string) {
+	t.Helper()
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -127,6 +148,7 @@ func get(t *testing.T, url string) (int, string) {
 }
 
 func post(t *testing.T, url string, jsonPath string) (int, string) {
+	t.Helper()
 	request, err := os.ReadFile(jsonPath)
 	require.NoError(t, err)
 
@@ -146,6 +168,7 @@ func post(t *testing.T, url string, jsonPath string) (int, string) {
 }
 
 func put(t *testing.T, url string, jsonPath string) (int, string) {
+	t.Helper()
 	request, err := os.ReadFile(jsonPath)
 	require.NoError(t, err)
 
@@ -166,6 +189,7 @@ func put(t *testing.T, url string, jsonPath string) (int, string) {
 }
 
 func delete(t *testing.T, url string) (int, string) {
+	t.Helper()
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodDelete, url, nil)
 	req.Header.Set("Authorization", authToken)
@@ -186,4 +210,33 @@ func getFieldInJsonString(t *testing.T, jsonString string, field string) string 
 	err := json.Unmarshal([]byte(jsonString), &jsonMap)
 	require.NoError(t, err)
 	return jsonMap[field].(string)
+}
+
+func SetupAPIHelper(t *testing.T) (close func()) {
+	t.Helper()
+	p := prepareDB(t)
+
+	ctx := context.Background()
+	cmd := exec.CommandContext(ctx, "go", "run", "../../cmd/api/main.go")
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true, // Set process group ID to the same as the process ID
+	}
+	cmd.Env = append(cmd.Environ(), "HOST=localhost", fmt.Sprint("PORT=", p.Port()), "USER=postgres", "PASSWORD=postgres")
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Start()
+
+	require.NoError(t, err)
+
+	//TODO//wait up server
+	exec.Command("sleep", "10").Run()
+
+	return func() {
+		syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+		cmd.Wait()
+		t.Log("close api server")
+		t.Log("out:", stdout.String(), "err:", stderr.String())
+	}
+
 }
