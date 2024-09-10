@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/docker/go-connections/nat"
 	_ "github.com/lib/pq"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 )
@@ -15,9 +14,8 @@ const (
 	password = "postgres"
 )
 
-func prepareDB(t *testing.T) nat.Port {
+func prepareDB(t *testing.T, ctx context.Context) *postgres.PostgresContainer {
 	t.Helper()
-	ctx := context.Background()
 
 	// 1. Start the postgres container and run any migrations on it
 	container, err := postgres.Run(
@@ -30,11 +28,6 @@ func prepareDB(t *testing.T) nat.Port {
 		postgres.WithSQLDriver("pq"),
 		postgres.WithInitScripts("../../fixture/postgres/init/customer.sql"),
 	)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	p, err := container.MappedPort(ctx, "5432")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,5 +45,5 @@ func prepareDB(t *testing.T) nat.Port {
 		}
 	})
 
-	return p
+	return container
 }

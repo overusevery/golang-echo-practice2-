@@ -214,9 +214,13 @@ func getFieldInJsonString(t *testing.T, jsonString string, field string) string 
 
 func SetupAPIHelper(t *testing.T) (close func()) {
 	t.Helper()
-	p := prepareDB(t)
-
 	ctx := context.Background()
+	container := prepareDB(t, ctx)
+	p, err := container.MappedPort(ctx, "5432")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	cmd := exec.CommandContext(ctx, "go", "run", "../../cmd/api/main.go")
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Setpgid: true, // Set process group ID to the same as the process ID
@@ -225,7 +229,7 @@ func SetupAPIHelper(t *testing.T) (close func()) {
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
-	err := cmd.Start()
+	err = cmd.Start()
 
 	require.NoError(t, err)
 
