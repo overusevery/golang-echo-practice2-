@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"log"
+	"net/http"
 	"os/exec"
 	"syscall"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 )
@@ -32,8 +35,7 @@ func SetupAPIHelper(t *testing.T) (close func()) {
 
 	require.NoError(t, err)
 
-	//TODO//wait up server
-	exec.Command("sleep", "10").Run()
+	waitForHealthCheck("http://localhost:1323/health", 1)
 
 	return func() {
 		syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
@@ -42,4 +44,28 @@ func SetupAPIHelper(t *testing.T) (close func()) {
 		t.Log("out:", stdout.String(), "err:", stderr.String())
 	}
 
+}
+
+func waitForHealthCheck(url string, interval time.Duration) {
+
+	for {
+		// Make HTTP GET request to the health check API
+		resp, err := http.Get(url)
+		if err != nil {
+			log.Printf("Error making request: %v\n", err)
+		} else {
+			// Check if status code is 200 OK
+			if resp.StatusCode == http.StatusOK {
+				log.Println("Health check passed with 200 OK")
+				return
+			}
+			// Print the status code if not 200
+			log.Printf("Received status code: %d\n", resp.StatusCode)
+			resp.Body.Close()
+			return
+		}
+
+		// Wait for the next interval before retrying
+		time.Sleep(interval)
+	}
 }
