@@ -2,14 +2,10 @@ package e2e
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"os/exec"
-	"syscall"
 	"testing"
 
 	"github.com/overusevery/golang-echo-practice2/e2e/util"
@@ -210,37 +206,4 @@ func getFieldInJsonString(t *testing.T, jsonString string, field string) string 
 	err := json.Unmarshal([]byte(jsonString), &jsonMap)
 	require.NoError(t, err)
 	return jsonMap[field].(string)
-}
-
-func SetupAPIHelper(t *testing.T) (close func()) {
-	t.Helper()
-	ctx := context.Background()
-	container := prepareDB(t, ctx)
-	p, err := container.MappedPort(ctx, "5432")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	cmd := exec.CommandContext(ctx, "go", "run", "../../cmd/api/main.go")
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Setpgid: true, // Set process group ID to the same as the process ID
-	}
-	cmd.Env = append(cmd.Environ(), "HOST=localhost", fmt.Sprint("PORT=", p.Port()), "USER=postgres", "PASSWORD=postgres")
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	err = cmd.Start()
-
-	require.NoError(t, err)
-
-	//TODO//wait up server
-	exec.Command("sleep", "10").Run()
-
-	return func() {
-		syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
-		cmd.Wait()
-		t.Log("close api server")
-		t.Log("out:", stdout.String(), "err:", stderr.String())
-	}
-
 }

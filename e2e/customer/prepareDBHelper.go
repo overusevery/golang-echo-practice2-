@@ -14,7 +14,7 @@ const (
 	password = "postgres"
 )
 
-func prepareDB(t *testing.T, ctx context.Context) *postgres.PostgresContainer {
+func prepareDBHelper(t *testing.T, ctx context.Context) *postgres.PostgresContainer {
 	t.Helper()
 
 	// 1. Start the postgres container and run any migrations on it
