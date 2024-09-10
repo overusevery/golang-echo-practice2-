@@ -80,7 +80,7 @@ func TestDeleteCustomerHandler_DeleteCustomer(t *testing.T) {
 
 func setupMock(t *testing.T) (*echo.Echo, func(), *mock_repository.MockCustomerRepository) {
 	e := echo.New()
-	e.Use(customemiddleware.ParseAuthorizationToken)
+	e.Use(customemiddleware.ParseAuthorizationToken())
 	ctrl := gomock.NewController(t)
 	close := func() {
 		ctrl.Finish()

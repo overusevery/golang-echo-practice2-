@@ -63,7 +63,7 @@ func TestParseAuthorizationToken(t *testing.T) {
 		}
 
 		req.Header.Set(echo.HeaderAuthorization, "Bearer "+example_token)
-		ParseAuthorizationToken(dummyHandler)(c)
+		ParseAuthorizationToken()(dummyHandler)(c)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 		assert.Equal(t, hw, res.Body.Bytes())
@@ -88,7 +88,7 @@ func TestParseAuthorizationToken(t *testing.T) {
 		}
 
 		req.Header.Set(echo.HeaderAuthorization, "Bearer "+example_token_multi_scope)
-		ParseAuthorizationToken(dummyHandler)(c)
+		ParseAuthorizationToken()(dummyHandler)(c)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 		assert.Equal(t, hw, res.Body.Bytes())
@@ -114,7 +114,7 @@ func TestParseAuthorizationToken(t *testing.T) {
 
 		// no token
 		// req.Header.Set(echo.HeaderAuthorization, "Bearer "+example_token)
-		ParseAuthorizationToken(dummyHandler)(c)
+		ParseAuthorizationToken()(dummyHandler)(c)
 
 		assert.Equal(t, http.StatusUnauthorized, res.Code)
 		assert.NotEqual(t, hw, res.Body.Bytes())
@@ -138,7 +138,7 @@ func TestParseAuthorizationToken(t *testing.T) {
 		}
 
 		req.Header.Set(echo.HeaderAuthorization, "Bearer "+"xxx")
-		ParseAuthorizationToken(dummyHandler)(c)
+		ParseAuthorizationToken()(dummyHandler)(c)
 
 		assert.Equal(t, http.StatusUnauthorized, res.Code)
 		assert.NotEqual(t, hw, res.Body.Bytes())
@@ -162,7 +162,7 @@ func TestParseAuthorizationToken(t *testing.T) {
 		}
 
 		req.Header.Set(echo.HeaderAuthorization, "Bearer "+"eyJraWQiOiJzb21la2lkIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiIxMTExMTExMS0xMTExLTExMTEtMTExMS0xMTExMTExMTExMTEiLCJpc3MiOiJzb21laXNzIiwiY2xpZW50X2lkIjoic29tZWNsaWVudF9pZCIsInNjb3BlIjoibXliYWNrZW5kYXBpL0EgbXliYWNrZW5kYXBpL0IiLCJleHAiOjE4MjQ3NjczMzIsImlhdCI6MTcyNDc2MzczMiwianRpIjoiMjIyMjIyMjItMjIyMi0yMjIyLTIyMjItMjIyMjIyMjIyMjIyIn0.XXXXXXXXXX")
-		ParseAuthorizationToken(dummyHandler)(c)
+		ParseAuthorizationToken()(dummyHandler)(c)
 
 		assert.Equal(t, http.StatusUnauthorized, res.Code)
 		assert.NotEqual(t, hw, res.Body.Bytes())
@@ -186,7 +186,7 @@ func TestParseAuthorizationToken(t *testing.T) {
 		}
 
 		req.Header.Set(echo.HeaderAuthorization, "Bearer "+"eyJraWQiOiJzb21la2lkIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiIxMTExMTExMS0xMTExLTExMTEtMTExMS0xMTExMTExMTExMTEiLCJpc3MiOiJzb21laXNzIiwiY2xpZW50X2lkIjoic29tZWNsaWVudF9pZCIsInNjb3BlIjoibXliYWNrZW5kYXBpL0EgbXliYWNrZW5kYXBpL0IiLCJleHAiOjE4MjQ3NjczMzIsImlhdCI6MTcyNDc2MzczMiwianRpIjoiMjIyMjIyMjItMjIyMi0yMjIyLTIyMjItMjIyMjIyMjIyMjIyIn0")
-		ParseAuthorizationToken(dummyHandler)(c)
+		ParseAuthorizationToken()(dummyHandler)(c)
 
 		assert.Equal(t, http.StatusUnauthorized, res.Code)
 		assert.NotEqual(t, hw, res.Body.Bytes())

@@ -15,21 +15,35 @@ var (
 	SCOPE   = "scope"
 )
 
-func ParseAuthorizationToken(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		//In production code, using kong or api gateway to verify jwt may be easier.
-		claims, isInvalid := parseAuthorizationToken(c)
-		if isInvalid {
-			return c.JSON(http.StatusUnauthorized, openapi.Error{
-				Message: "valid API key is not provided",
-			})
-		}
+func ParseAuthorizationToken(excludePath ...string) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if !shouldSkip(c, excludePath) {
+				//In production code, using kong or api gateway to verify jwt may be easier.
+				claims, isInvalid := parseAuthorizationToken(c)
+				if isInvalid {
+					return c.JSON(http.StatusUnauthorized, openapi.Error{
+						Message: "valid API key is not provided",
+					})
+				}
 
-		setValueToContext(c, USER_ID, claims.Subject)
-		setValueToContext(c, SCOPE, strings.Fields(claims.Scope))
-		return next(c)
+				setValueToContext(c, USER_ID, claims.Subject)
+				setValueToContext(c, SCOPE, strings.Fields(claims.Scope))
+			}
+			return next(c)
+		}
 	}
 }
+
+func shouldSkip(c echo.Context, excludePath []string) bool {
+	for _, p := range excludePath {
+		if c.Path() == p {
+			return true
+		}
+	}
+	return false
+}
+
 func setValueToContext(c echo.Context, key string, value any) {
 	c.SetRequest(c.Request().WithContext(context.WithValue(c.Request().Context(), key, value)))
 }

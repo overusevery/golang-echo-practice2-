@@ -19,6 +19,7 @@ import (
 	"github.com/overusevery/golang-echo-practice2/src/domain/usecase/customerusecase"
 	"github.com/overusevery/golang-echo-practice2/src/handler/customemiddleware"
 	handler "github.com/overusevery/golang-echo-practice2/src/handler/customerhandler"
+	healthHandler "github.com/overusevery/golang-echo-practice2/src/handler/healthcheckhandler"
 	"github.com/overusevery/golang-echo-practice2/src/repository"
 )
 
@@ -58,8 +59,12 @@ func run() int {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(customemiddleware.ParseAuthorizationToken)
 
+	//health check
+	healthHandler.NewHealthHandler().RegisterRouter(e)
+
+	//auth middleware
+	e.Use(customemiddleware.ParseAuthorizationToken("/health"))
 	// Routes
 	r := repository.NewRealCustomerRepository(db)
 	getCustomerHandler := handler.NewGetCustomrHandler(customerusecase.NewGetCustomerUseCase(r))

@@ -77,7 +77,7 @@ func TestGetCustomer(t *testing.T) {
 
 func setupGetCustomerHandlerWithMock(t *testing.T, testFun func(m *mock_repository.MockCustomerRepository, e *echo.Echo)) {
 	e := echo.New()
-	e.Use(customemiddleware.ParseAuthorizationToken)
+	e.Use(customemiddleware.ParseAuthorizationToken())
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	m := mock_repository.NewMockCustomerRepository(ctrl)

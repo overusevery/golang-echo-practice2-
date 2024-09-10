@@ -85,7 +85,7 @@ func TestUpdateCustomerHandler(t *testing.T) {
 
 func setUpdateCustomerMock(t *testing.T) (*echo.Echo, *mock_repository.MockCustomerRepository, func()) {
 	e := echo.New()
-	e.Use(customemiddleware.ParseAuthorizationToken)
+	e.Use(customemiddleware.ParseAuthorizationToken())
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
